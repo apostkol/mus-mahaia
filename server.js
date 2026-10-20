@@ -14,7 +14,7 @@ const ROOM_IDLE_MS = 24 * 60 * 60 * 1000; // forget empty rooms after a day
 /* ---------- static files ---------- */
 const TYPES = { '.jpg': 'image/jpeg', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.png': 'image/png' };
 // Only these files are served to browsers.
-const FILES = { '/': 'index.html', '/index.html': 'index.html', '/engine.js': 'engine.js', '/cards.jpg': 'cards.jpg' };
+const FILES = { '/': 'index.html', '/index.html': 'index.html', '/engine.js': 'engine.js', '/cards.jpg': 'cards.jpg', '/back.jpg': 'back.jpg' };
 const server = http.createServer((req, res) => {
   const p = new URL(req.url, 'http://x').pathname;
   if (p === '/healthz') { res.writeHead(200); return res.end('ok'); }
