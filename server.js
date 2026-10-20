@@ -14,17 +14,19 @@ const ROOM_IDLE_MS = 24 * 60 * 60 * 1000; // forget empty rooms after a day
 /* ---------- static files ---------- */
 const TYPES = { '.jpg': 'image/jpeg', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.png': 'image/png' };
 // Only these files are served to browsers.
-const FILES = { '/': 'index.html', '/index.html': 'index.html', '/engine.js': 'engine.js', '/cards.jpg': 'cards.jpg', '/back.jpg': 'back.jpg' };
+const FILES = { '/': 'index.html', '/index.html': 'index.html', '/engine.js': 'engine.js' };
+const CARD_FILE = /^\/cards\/(?:(?:oros|copas|espadas|bastos)_(?:[1-7]|1[0-2])|backside)\.jpg$/;
 const server = http.createServer((req, res) => {
   const p = new URL(req.url, 'http://x').pathname;
   if (p === '/healthz') { res.writeHead(200); return res.end('ok'); }
+  if (CARD_FILE.test(p)) return sendFile(res, path.join(__dirname, p), 'public, max-age=604800');
   if (!FILES[p]) { res.writeHead(404, { 'Content-Type': 'text/plain' }); return res.end('Not found'); }
   sendFile(res, path.join(__dirname, FILES[p]));
 });
-function sendFile(res, file) {
+function sendFile(res, file, cache = 'no-cache') {
   fs.readFile(file, (err, buf) => {
     if (err) { res.writeHead(404, { 'Content-Type': 'text/plain' }); return res.end('Not found'); }
-    res.writeHead(200, { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-cache' });
+    res.writeHead(200, { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream', 'Cache-Control': cache });
     res.end(buf);
   });
 }

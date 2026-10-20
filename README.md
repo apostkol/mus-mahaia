@@ -47,5 +47,4 @@ Railway, Fly.io, a small VPS, or a Raspberry Pi at home work the same way.
 - `server.js` – web server, rooms, chat, and what each player is allowed to see
 - `engine.js` – the Mus rules (dealing, lances, betting, scoring), shared by server and browser
 - `index.html` – the table, chat and settings in the browser
-- `cards.jpg` – the Spanish deck (all 40 cards in one image)
-- `back.jpg` – the back of the cards
+- `cards/` – one picture per card (`oros_1.jpg` … `bastos_12.jpg`) and the card back (`backside.jpg`). Replace any of them with your own picture under the same name.
