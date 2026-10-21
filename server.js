@@ -76,10 +76,25 @@ function send(ws, msg) { if (ws.readyState === 1) ws.send(JSON.stringify(msg)); 
 function sendAll(room, msg) { for (const c of room.clients) send(c, msg); }
 
 // Every change to a table goes through here: apply, save a finished hand, tell everyone, let bots move.
+// Players' screens pause on deals, round endings and declarations; bots wait the same time.
+const snap = s => ({ handId: s.handId, phase: s.phase, lanceIdx: s.lanceIdx, pares: !!(s.decl && s.decl.pares), juego: !!(s.decl && s.decl.juego), draw: s.lastDraw && s.lastDraw.round });
+function paceMs(o, n) {
+  let ms = 0;
+  if (n.handId && n.handId !== o.handId && n.phase !== 'waiting') ms += 16 * 110 + 760;
+  else if (n.lastDraw && o.draw !== n.lastDraw.round) ms += n.lastDraw.counts.reduce((a, b) => a + b, 0) * 110 + 760;
+  if (n.handId && o.handId === n.handId) {
+    if (o.phase === 'lance' && (n.phase !== 'lance' || n.lanceIdx !== o.lanceIdx) && n.prevSaid && n.prevSaid.some(Boolean)) ms += 1300;
+    if (n.decl && n.decl.pares && !o.pares && !(n.phase === 'lance' && n.lanceIdx === 2)) ms += 2400;
+    if (n.decl && n.decl.juego && !o.juego && !n.punto && !(n.phase === 'lance' && n.lanceIdx === 3)) ms += 2400;
+  }
+  return ms;
+}
 function apply(room, a, uid) {
   let err;
+  const before = snap(room.st);
   try { err = E.act(room.st, a, uid); } catch (e) { console.error(e); err = 'Something went wrong with that move.'; }
   if (err) return err;
+  room.paceUntil = Math.max(room.paceUntil || 0, Date.now()) + paceMs(before, room.st);
   room.st.rev = (room.st.rev || 0) + 1;
   Rec.save(E.takeRecord(room.st), room.code);
   broadcast(room);
@@ -95,7 +110,7 @@ function scheduleBots(room) {
   planSigns(room, bots);
   const todo = bots.map(x => ({ x, a: Bot.move(st, x) })).filter(m => m.a);
   if (!todo.length) return;
-  const wait = BOT_DELAY[0] + Math.random() * (BOT_DELAY[1] - BOT_DELAY[0]);
+  const wait = Math.max(0, (room.paceUntil || 0) - Date.now()) + BOT_DELAY[0] + Math.random() * (BOT_DELAY[1] - BOT_DELAY[0]);
   room.botTimer = setTimeout(() => {
     room.botTimer = null;
     const m = todo[0], again = Bot.move(room.st, m.x); // the table may have changed meanwhile

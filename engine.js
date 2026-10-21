@@ -73,7 +73,7 @@ function deal(s) {
   s.dealLog = [{ hands: s.hands.map(h => h.slice()) }];
   Object.assign(s, { phase: 'mus', musTurn: s.mano, musCount: 0, discardSel: [null, null, null, null], lanceIdx: 0, lance: null,
     results: [null, null, null, null], punto: false, said: [null, null, null, null], decl: { pares: null, juego: null },
-    reveal: false, summary: [], winner: null, ordagoPend: null });
+    reveal: false, summary: [], winner: null, ordagoPend: null, lastDraw: null, prevSaid: null });
   L(s, `Hand ${s.handNo}. ${nm(s, s.dealer)} deals; ${nm(s, s.mano)}, on the dealer's right, is mano and speaks first.`);
 }
 function eligFor(s, i) {
@@ -89,6 +89,7 @@ function bestSeat(s, i) {
   return b;
 }
 function startLance(s, i) {
+  s.prevSaid = s.said.slice();
   s.said = [null, null, null, null];
   if (i > 3) return endHand(s);
   s.lanceIdx = i; s.phase = 'lance';
@@ -119,7 +120,7 @@ function finishGame(s, t) {
   else L(s, `${tn(s, t)} win the game. Games: ${tn(s, 0)} ${s.games[0]} – ${s.games[1]} ${tn(s, 1)}.`);
 }
 function endHand(s) {
-  s.reveal = true; s.lance = null; s.said = [null, null, null, null]; s.summary = [];
+  s.reveal = true; s.lance = null; s.prevSaid = s.said.slice(); s.said = [null, null, null, null]; s.summary = [];
   if (manual(s)) { s.phase = 'handEnd'; L(s, 'Hand over. Count the points and move the coins.'); return; }
   const lines = [];
   for (let i = 0; i < 4; i++) {
@@ -264,6 +265,7 @@ function act(s, a, uid) {
         const counts = rot(s.mano).map(x => `${nm(s, x)} ${s.discardSel[x].length}`).join(', ');
         const last = s.dealLog && s.dealLog[s.dealLog.length - 1];
         if (last) last.discards = s.discardSel.map((idx, x) => idx.map(k => s.hands[x][k]));
+        s.lastDraw = { round: s.dealLog ? s.dealLog.length : 1, counts: s.discardSel.map(i => i.length) };
         const re = replaceDiscards(s);
         if (s.dealLog) s.dealLog.push({ hands: s.hands.map(h => h.slice()) });
         L(s, (re ? 'The deck ran out, so the discards were shuffled into a new deck. ' : '') + `New cards: ${counts}.`);
@@ -286,7 +288,7 @@ function act(s, a, uid) {
       if (a.t === 'bet' && Lc.bet) return 'There is already a bet.';
       if (a.t === 'raise' && (!Lc.bet || Lc.bet.ordago)) return 'Nothing to raise.';
       if (a.t === 'ordago' && Lc.bet && Lc.bet.ordago) return 'Órdago is already on.';
-      if (a.t === 'bet') { Lc.bet = { stake: n, prev: 1, team: team(a.s), ordago: false }; s.said[a.s] = n === 2 ? 'Envido' : `Envido ${n}`; L(s, `${who}: envido ${n} a la ${lname(s, i).toLowerCase()}.`); }
+      if (a.t === 'bet') { Lc.bet = { stake: n, prev: 1, team: team(a.s), ordago: false }; s.said[a.s] = `Envido ${n}`; L(s, `${who}: envido ${n} a la ${lname(s, i).toLowerCase()}.`); }
       else if (a.t === 'raise') { Lc.bet = { stake: Lc.bet.stake + n, prev: Lc.bet.stake, team: team(a.s), ordago: false }; s.said[a.s] = `${n} más`; L(s, `${who}: ${n} más (${Lc.bet.stake} on the table).`); }
       else { Lc.bet = { stake: 0, prev: Lc.bet ? Lc.bet.stake : 1, team: team(a.s), ordago: true }; s.said[a.s] = '¡Órdago!'; L(s, `${who}: ¡ÓRDAGO a la ${lname(s, i).toLowerCase()}!`); }
       Lc.resp = oppsAfter(s, a.s); Lc.ri = 0; Lc.turn = Lc.resp[0];
