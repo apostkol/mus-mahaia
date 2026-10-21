@@ -55,7 +55,8 @@ function fresh() {
     musTurn: 0, musCount: 0, discardSel: [null, null, null, null], lanceIdx: 0, lance: null,
     results: [null, null, null, null], punto: false, said: [null, null, null, null],
     decl: { pares: null, juego: null }, reveal: false, summary: [], winner: null,
-    matchWinner: null, ordagoPend: null, log: [] };
+    matchWinner: null, ordagoPend: null, log: [],
+    handId: null, dealLog: null, recordedHand: null };
 }
 const tn = (s, t) => (s.teamNames && s.teamNames[t]) || DEFAULT_TEAMS[t];
 const nm = (s, i) => (s.seats[i] && s.seats[i].nick) || 'Seat ' + (i + 1);
@@ -68,6 +69,8 @@ function deal(s) {
   s.dealer = (s.dealer + 1) % 4; s.mano = (s.dealer + 1) % 4; s.handNo = (s.handNo || 0) + 1;
   const d = newDeck();
   s.hands = [0, 1, 2, 3].map(() => d.splice(d.length - 4, 4)); s.deck = d; s.discards = [];
+  s.handId = Date.now().toString(36) + '-' + rint(1e9).toString(36);
+  s.dealLog = [{ hands: s.hands.map(h => h.slice()) }];
   Object.assign(s, { phase: 'mus', musTurn: s.mano, musCount: 0, discardSel: [null, null, null, null], lanceIdx: 0, lance: null,
     results: [null, null, null, null], punto: false, said: [null, null, null, null], decl: { pares: null, juego: null },
     reveal: false, summary: [], winner: null, ordagoPend: null });
@@ -170,7 +173,9 @@ function replaceDiscards(s) {
 }
 
 /* apply one action; returns an error string or nothing */
-const FREE_ACTIONS = ['sit', 'start', 'next', 'newgame', 'reset', 'nick', 'free', 'teamName', 'cfg', 'adj', 'award'];
+const FREE_ACTIONS = ['sit', 'start', 'next', 'newgame', 'reset', 'nick', 'free', 'teamName', 'cfg', 'adj', 'award', 'addBot'];
+const BOT_NAMES = ['Txomin', 'Miren', 'Patxi', 'Amaia', 'Koldo', 'Nerea'];
+const isBot = seat => !!(seat && seat.bot);
 function act(s, a, uid) {
   const own = x => s.seats[x] && s.seats[x].uid === uid;
   const seated = s.seats.some(x => x && x.uid === uid);
@@ -182,7 +187,18 @@ function act(s, a, uid) {
       if (s.seats[a.s]) return 'Someone took that seat.';
       s.seats[a.s] = { uid, nick: a.nick }; L(s, `${a.nick} sits in seat ${a.s + 1} (${tn(s, team(a.s))}).`); return;
     case 'stand': L(s, `${nm(s, a.s)} leaves seat ${a.s + 1}.`); s.seats[a.s] = null; return;
-    case 'free': if (!s.seats[a.s]) return; L(s, `Seat ${a.s + 1} (${nm(s, a.s)}) was freed.`); s.seats[a.s] = null; return;
+    case 'free':
+      if (!s.seats[a.s]) return;
+      if (isBot(s.seats[a.s]) && !['waiting', 'handEnd', 'gameEnd'].includes(s.phase)) return 'Remove bots between hands.';
+      L(s, isBot(s.seats[a.s]) ? `${nm(s, a.s)} (bot) left the table.` : `Seat ${a.s + 1} (${nm(s, a.s)}) was freed.`); s.seats[a.s] = null; return;
+    case 'addBot': {
+      if (s.seats[a.s]) return 'That seat is taken.';
+      if (s.seats.filter(isBot).length >= 3) return 'A table can have at most 3 bots.';
+      const used = s.seats.filter(Boolean).map(x => x.nick);
+      const name = BOT_NAMES.find(n => !used.includes(n)) || 'Bot';
+      s.seats[a.s] = { uid: 'bot:' + a.s + ':' + rint(1e9), nick: name, bot: true };
+      L(s, `${name} (bot) sits in seat ${a.s + 1} (${tn(s, team(a.s))}).`); return;
+    }
     case 'nick': s.seats.forEach(x => { if (x && x.uid === uid) x.nick = a.nick; }); return;
     case 'teamName': {
       const t = a.team === 1 ? 1 : 0, name = String(a.name || '').trim().slice(0, 20);
@@ -246,7 +262,10 @@ function act(s, a, uid) {
       s.discardSel[a.s] = idx; s.said[a.s] = `Descarta ${idx.length}`;
       if (s.discardSel.every(x => x)) {
         const counts = rot(s.mano).map(x => `${nm(s, x)} ${s.discardSel[x].length}`).join(', ');
+        const last = s.dealLog && s.dealLog[s.dealLog.length - 1];
+        if (last) last.discards = s.discardSel.map((idx, x) => idx.map(k => s.hands[x][k]));
         const re = replaceDiscards(s);
+        if (s.dealLog) s.dealLog.push({ hands: s.hands.map(h => h.slice()) });
         L(s, (re ? 'The deck ran out, so the discards were shuffled into a new deck. ' : '') + `New cards: ${counts}.`);
         Object.assign(s, { phase: 'mus', musTurn: s.mano, musCount: 0, discardSel: [null, null, null, null], said: [null, null, null, null] });
       }
@@ -303,7 +322,34 @@ function act(s, a, uid) {
   return 'Unknown move.';
 }
 
-const E = { LNAME, JORD, DEFAULT_TEAMS, SUITS, RANKS, team, rot, rk, gv, pv, total, paresOf, paresText, better,
+/* ---------- signs (keinuak): which ones are true for a hand ---------- */
+const SIGNS = ['kings2', 'kings3', 'aces2', 'aces3', 'pareak', 'mediak', 'dupleak', 'juego31', 'itsuarena'];
+function signsFor(h) {
+  if (!h || h.length !== 4 || !h.every(Boolean)) return [];
+  const k = h.filter(c => gv(c) === 12).length, a = h.filter(c => gv(c) === 1).length, p = paresOf(h), t = total(h);
+  const out = [];
+  if (k === 2) out.push('kings2'); if (k === 3) out.push('kings3');
+  if (a === 2) out.push('aces2'); if (a === 3) out.push('aces3');
+  if (p && p.t === 1) out.push('pareak'); if (p && p.t === 2) out.push('mediak'); if (p && p.t === 3) out.push('dupleak');
+  if (t === 31) out.push('juego31');
+  if (!p && t < 31) out.push('itsuarena');
+  return out;
+}
+
+/* ---------- hand records for statistics (taken once a hand is over) ---------- */
+function takeRecord(s) {
+  if (!s.dealLog || !s.handId || s.recordedHand === s.handId || !['handEnd', 'gameEnd'].includes(s.phase)) return null;
+  s.recordedHand = s.handId;
+  return {
+    handId: s.handId, ts: new Date().toISOString(), handNo: s.handNo, dealer: s.dealer, mano: s.mano,
+    players: s.seats.map(x => (x && x.bot ? 'bot' : 'human')),
+    deals: s.dealLog.map((d, i) => ({ musRound: i, hands: d.hands, discards: d.discards || null })),
+    results: s.results, punto: s.punto, scoreAfter: s.score.slice(), scoring: s.cfg.scoring,
+    gameWonBy: s.phase === 'gameEnd' ? s.winner : null
+  };
+}
+
+const E = { SIGNS, signsFor, takeRecord, isBot, LNAME, JORD, DEFAULT_TEAMS, SUITS, RANKS, team, rot, rk, gv, pv, total, paresOf, paresText, better,
   fresh, act, nm, tn, lname, bestSeat, gamesToWin, newDeck, shuffle, rint };
 if (typeof module !== 'undefined' && module.exports) module.exports = E; else root.MusEngine = E;
 })(typeof self !== 'undefined' ? self : this);

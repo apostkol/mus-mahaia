@@ -88,6 +88,19 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .nm .dot{width:.6em;height:.6em;border-radius:50%;flex:none;box-shadow:0 0 0 2px rgba(255,255,255,.6)}
 .nm .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:12em}
 .chip{font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;padding:1px 7px;border-radius:999px;border:1px solid var(--felt-muted);color:var(--felt-ink);font-weight:700;flex:none;text-shadow:none;background:rgba(0,0,0,.25)}
+.face{font-size:1.55em;line-height:1;display:inline-block;transition:transform .18s;filter:drop-shadow(0 1px 1px rgba(0,0,0,.45));text-shadow:none;width:1.15em;text-align:center}
+button.face{background:none;border:none;padding:0;cursor:pointer;border-radius:50%}
+button.face:hover{transform:scale(1.15)}
+button.face:focus-visible{outline:2px solid var(--turn);outline-offset:2px}
+.face.signing{animation:signpop .2s ease-out}
+@keyframes signpop{from{scale:.6}to{scale:1}}
+.signmenu{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;background:rgba(0,0,0,.35);border-radius:12px;padding:8px;max-width:100%}
+.signmenu .hint{width:100%;text-align:center;color:var(--felt-muted);font-size:.8rem;margin:0}
+.signmenu button{background:var(--paper);color:#2a201a;border:none;border-radius:999px;padding:5px 12px 5px 6px;font-size:.9rem;display:inline-flex;align-items:center;gap:6px;text-shadow:none;min-height:38px}
+.signmenu button span{font-size:1.4rem;line-height:1}
+.signmenu button.x2{background:transparent;color:var(--felt-ink);border:1px solid var(--felt-muted);padding:5px 12px}
+.botchip{font-size:.62rem;font-weight:700;letter-spacing:.08em;padding:1px 6px;border-radius:999px;background:rgba(255,255,255,.18);color:var(--felt-ink);text-shadow:none}
+.seatbtns{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 .hand-up{font-size:1.15em;line-height:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5));cursor:help}
 .dealer{display:inline-flex;align-items:center;gap:4px;font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;padding:1px 4px 1px 8px;border-radius:999px;background:var(--paper);color:#2a201a;text-shadow:none}
 .dealer i{font-style:normal;font-size:1rem;line-height:1;color:var(--accent)}
@@ -103,7 +116,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .coin{width:1.7em;height:1.7em;border-radius:50%;display:inline-grid;place-items:center;font-size:.72rem;font-weight:700;color:#fff;text-shadow:none;
   box-shadow:inset 0 0 0 2px rgba(255,255,255,.55), 0 1px 2px rgba(0,0,0,.5)}
 .coin.blue{background:var(--coin-blue)}.coin.red{background:var(--coin-red)}
-.seatbtn{background:rgba(0,0,0,.25);border:1px dashed var(--felt-muted);color:var(--felt-ink);border-radius:8px;padding:12px 16px}
+.seatbtn{background:rgba(0,0,0,.25);border:1px dashed var(--felt-muted);color:var(--felt-ink);border-radius:8px;padding:10px 14px}
+.seatbtn.bot{border-style:solid;border-color:rgba(255,255,255,.25)}
 .x{background:none;border:none;color:var(--felt-muted);font-size:.78rem;text-decoration:underline;padding:0}
 .sum{font-size:.8rem;color:var(--felt-muted);font-variant-numeric:tabular-nums}
 
@@ -265,6 +279,7 @@ legend{font-family:var(--display);font-weight:600;font-size:1.2rem;padding:0;mar
       <p>Mus: everyone says Mus or No hay mus in turn. If all four say Mus, each player discards 1–4 cards; discards go to a pile, and when the deck runs out that pile is shuffled into a new deck. The first No hay mus starts the betting.</p>
       <p>Lances: Grande (high cards), Chica (low cards), Pares, Juego (31 or more: 31, 32, 40, 37…33). If nobody has juego, Punto is played (closest to 30). Ties go to whoever is closest to the mano. Before Pares and Juego, each player says sí or no in turn.</p>
       <p>Envido opens at 2; you can raise, accept (Quiero) or refuse (No quiero). A refused bet scores the previous stake (1 for a first bet). Accepted bets and passed lances are counted at the end of the hand. Bonuses: par 1, medias 2, duples 3; juego 2, 31 scores 3; punto 1. An accepted Órdago wins the game on that lance. Each game is to 40; a match is the best of the chosen number of games.</p>
+      <p>Signs (keinuak): tap your own face 🙂 next to your name to make a sign about your hand. Everyone at the table sees it for a moment, so your partner should watch, and so will your opponents. Two kings 🫦 (biting the lower lip), three kings 🫦 tilted (biting one side), two aces 😛 (tongue out), three aces 😛 tilted (tongue to one side), a pair 🙂 tilted (head tilt), three of a kind 🫤 (lips to one side), two pairs 🤨 (eyebrows up), 31 😉 (wink), nothing 😌 (eyes closed).</p>
       <p>✋ marks the mano, who plays first in every lance. Coins: each team's points are shown as coins. One partner holds the blue coins (1 point each), the other holds the red coins (5 points each).</p>
     </details>
   </section>
@@ -339,7 +354,7 @@ legend{font-family:var(--display);font-weight:600;font-size:1.2rem;padding:0;mar
 <script src="/engine.js"></script>
 <script>
 (() => {
-const { LNAME, SUITS, RANKS, team, rot, rk, total, paresOf, paresText, nm, tn, lname, gamesToWin } = MusEngine;
+const { LNAME, SUITS, RANKS, team, rot, rk, total, paresOf, paresText, nm, tn, lname, gamesToWin, signsFor } = MusEngine;
 const TEAMVAR = ['var(--red)', 'var(--green)'];
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -457,23 +472,24 @@ if (!ROOM) {
   $('topbar').hidden = true; $('main').hidden = true;
   const box = document.createElement('main'); box.className = 'lobby';
   box.innerHTML = `<h1>Mus Mahaia</h1>
-    <p>Play Mus with three friends, with a chat beside the table. Start a table and send the link, or join one with its code.</p>
+    <p>Play Mus with friends, or against bots, with a chat beside the table. Start a table and send the link, or join one with its code.</p>
     <div class="opts">
       <label>Match: best of <select id="lbBo">${BO_OPTIONS.map(n => `<option value="${n}"${n === 3 ? ' selected' : ''}>${n}</option>`).join('')}</select> games, each to 40 points</label>
       <div class="radio"><label><input type="radio" name="lbSc" value="auto" checked> Count points automatically</label>
         <label><input type="radio" name="lbSc" value="manual"> We count at the end of each hand</label></div>
+      <label>Bots: <select id="lbBots"><option value="0">none</option><option value="1">1 bot</option><option value="2">2 bots</option><option value="3">3 bots</option></select> <span class="hint">bots take the other team's seats first</span></label>
       <button class="btn hot" type="button" id="newTable">Start a new table</button>
     </div>
     <form class="joinf" id="joinForm"><input id="joinCode" maxlength="12" placeholder="Table code" aria-label="Table code"><button class="btn alt" type="submit">Join</button></form>`;
   document.body.prepend(box);
   $('newTable').onclick = () => {
     const sc = document.querySelector('input[name=lbSc]:checked').value;
-    location.search = `?t=${hex(3).toUpperCase()}&bo=${$('lbBo').value}&sc=${sc}`;
+    location.search = `?t=${hex(3).toUpperCase()}&bo=${$('lbBo').value}&sc=${sc}&bots=${$('lbBots').value}`;
   };
   $('joinForm').onsubmit = e => { e.preventDefault(); const c = $('joinCode').value.trim(); if (c) location.search = '?t=' + encodeURIComponent(c); };
   return;
 }
-const CREATE = qs.get('bo') ? { bestOf: +qs.get('bo'), scoring: qs.get('sc') } : null;
+const CREATE = qs.get('bo') ? { bestOf: +qs.get('bo'), scoring: qs.get('sc'), bots: +qs.get('bots') || 0 } : null;
 if (CREATE) history.replaceState(null, '', location.pathname + '?t=' + ROOM);
 let pid = store.get('mus-pid');
 if (!pid || !/^[a-f0-9]{32}$/.test(pid)) { pid = hex(16); store.set('mus-pid', pid); }
@@ -499,6 +515,10 @@ function connect() {
     let m; try { m = JSON.parse(e.data); } catch { return; }
     if (m.type === 'state') { st = m.st; render(); renderChat(); fillCfg(); }
     else if (m.type === 'chat') { chat = m.all ? m.all : [...chat, m.msg].slice(-200); renderChat(); }
+    else if (m.type === 'sign' && SIGN_INFO[m.sign]) {
+      showing[m.seat] = { sign: m.sign, until: Date.now() + SIGN_MS };
+      renderFelt(); setTimeout(() => { if (st) renderFelt(); }, SIGN_MS + 30);
+    }
     else if (m.type === 'error') toast(m.text);
   };
   sock.onclose = () => { connected = false; if (st) render(); setTimeout(connect, Math.min(8000, 500 * 2 ** retry++)); };
@@ -571,6 +591,35 @@ function coinsHTML(x) {
   return `<div class="coins" title="${n} red coin${n === 1 ? '' : 's'}, 5 points each">${'<span class="coin red">5</span>'.repeat(Math.min(n, 12))}${n > 12 ? ` ×${n}` : ''}</div>`;
 }
 
+/* ---------- faces and signs (keinuak) ---------- */
+const FACE = '🙂';
+const SIGN_INFO = {
+  kings2:   { e: '🫦', name: 'Two kings',      eu: 'Bi errege',  how: 'biting the middle of the lower lip' },
+  kings3:   { e: '🫦', tf: 'rotate(-28deg) translateX(-3px)', name: 'Three kings', eu: 'Hiru errege', how: 'biting one side of the lower lip' },
+  aces2:    { e: '😛', name: 'Two aces',       eu: 'Bi bateko',  how: 'sticking out the tongue' },
+  aces3:    { e: '😛', tf: 'rotate(28deg) translateX(3px)', name: 'Three aces', eu: 'Hiru bateko', how: 'tongue out to one side' },
+  pareak:   { e: '🙂', tf: 'rotate(-35deg)', name: 'A pair',     eu: 'Pareak',     how: 'tilting the head' },
+  mediak:   { e: '🫤', name: 'Three of a kind', eu: 'Mediak',    how: 'lips pursed to one side' },
+  dupleak:  { e: '🤨', name: 'Two pairs',      eu: 'Dupleak',    how: 'raising the eyebrows' },
+  juego31:  { e: '😉', name: '31',             eu: 'Hogeita hamaika', how: 'winking' },
+  itsuarena:{ e: '😌', name: 'Nothing',        eu: 'Itsuarena',  how: 'closing the eyes' }
+};
+const SIGN_MS = 1500;
+const showing = {};          // seat -> { sign, until }
+let signMenu = false;
+function faceHTML(x, mineBtn) {
+  const sh = showing[x] && showing[x].until > Date.now() ? SIGN_INFO[showing[x].sign] : null;
+  const e = sh ? sh.e : FACE, tf = sh && sh.tf ? ` style="transform:${sh.tf}"` : '';
+  const cls = `face${sh ? ' signing' : ''}`;
+  if (mineBtn) return `<button type="button" class="${cls}" data-face="${x}" aria-label="Make a sign" title="Make a sign"${tf}>${e}</button>`;
+  return `<span class="${cls}" aria-hidden="true"${tf}>${e}</span>`;
+}
+function signMenuHTML(x) {
+  const opts = signsFor(st.hands[x] || []);
+  return `<div class="signmenu">${opts.length ? `<p class="hint">Make a sign. Everyone can see it for a moment.</p>` + opts.map(k => `<button type="button" data-sign="${k}"><span>${SIGN_INFO[k].e}</span>${SIGN_INFO[k].name}</button>`).join('') : '<p class="hint">No sign fits your cards right now.</p>'}<button type="button" class="x2" data-signclose>Close</button></div>`;
+}
+const canSign = x => st && ['mus', 'discard', 'lance'].includes(st.phase) && st.seats[x] && st.seats[x].mine && (st.hands[x] || []).every(Boolean);
+
 function seatHTML(x, pos, vs) {
   const seat = st.seats[x];
   const turn = actingSeats().includes(x) && ['mus', 'lance'].includes(st.phase);
@@ -578,7 +627,7 @@ function seatHTML(x, pos, vs) {
   const cls = `seat ${pos}${turn ? ' turn' : ''}${meTurn ? ' me' : ''}${pos === 'bottom' ? '' : ' small'}`;
   if (!seat) {
     return `<div class="${cls}"><div class="nm"><span class="dot" style="background:${TEAMVAR[team(x)]}"></span><span class="t">Seat ${x + 1} · ${esc(tn(st, team(x)))}</span></div>
-      ${connected ? `<button class="seatbtn" type="button" data-sit="${x}">Sit here</button>` : '<span class="sum">empty</span>'}${coinsHTML(x)}</div>`;
+      ${connected ? `<div class="seatbtns"><button class="seatbtn" type="button" data-sit="${x}">Sit here</button>${st.seats.filter(s => s && s.bot).length < 3 && ['waiting', 'handEnd', 'gameEnd'].includes(st.phase) ? `<button class="seatbtn bot" type="button" data-a='${JSON.stringify({ t: 'addBot', s: x })}'>Add bot</button>` : ''}</div>` : '<span class="sum">empty</span>'}${coinsHTML(x)}</div>`;
   }
   const mine = seat.mine, h = st.hands[x] || [];
   const showFace = h.length > 0 && h.every(Boolean) && ((mine && x === vs) || st.reveal);
@@ -590,13 +639,14 @@ function seatHTML(x, pos, vs) {
     } else cards = h.map(c => cardHTML(c, { back: !showFace })).join('');
   }
   const conf = confirmKey === 'free' + x;
-  const tools = mine ? `<button class="x" type="button" data-stand="${x}">stand up</button>`
+  const tools = seat.bot ? (seated() && ['waiting', 'handEnd', 'gameEnd'].includes(st.phase) ? `<button class="x" type="button" data-free="${x}">${conf ? 'tap again to remove' : 'remove bot'}</button>` : '')
+    : mine ? `<button class="x" type="button" data-stand="${x}">stand up</button>`
     : connected && !seat.online ? `<button class="x" type="button" data-free="${x}">${conf ? 'tap again to free this seat' : 'player left? free this seat'}</button>` : '';
   const mano = st.phase !== 'waiting' && x === st.mano ? '<span class="hand-up" role="img" aria-label="Mano, plays first" title="Mano: plays first in every lance">✋</span>' : '';
   const said = st.said[x] ? `<span class="said${/Órdago|Envido|más/.test(st.said[x]) ? ' big' : ''}">${esc(st.said[x])}</span>` : '';
   return `<div class="${cls}">
-    <div class="nm">${mano}<span class="dot" style="background:${TEAMVAR[team(x)]}"></span><span class="t">${esc(seat.nick)}${mine ? ' (you)' : ''}${seat.online ? '' : ' · away'}</span>${meTurn ? '<span class="yourturn">Your turn</span>' : ''}</div>
-    ${coinsHTML(x)}${said}${declHTML(x)}<div class="hand">${cards}</div>${pos === 'bottom' && mine ? `<div class="tact" id="tact">${actionsHTML()}</div>` : ''}${tools}</div>`;
+    <div class="nm">${mano}${faceHTML(x, mine && x === vs && canSign(x))}<span class="dot" style="background:${TEAMVAR[team(x)]}"></span><span class="t">${esc(seat.nick)}${mine ? ' (you)' : ''}${seat.online ? '' : ' · away'}</span>${seat.bot ? '<span class="botchip">BOT</span>' : ''}${meTurn ? '<span class="yourturn">Your turn</span>' : ''}</div>
+    ${mine && x === vs && signMenu && canSign(x) ? signMenuHTML(x) : ''}${coinsHTML(x)}${said}${declHTML(x)}<div class="hand">${cards}</div>${pos === 'bottom' && mine ? `<div class="tact" id="tact">${actionsHTML()}</div>` : ''}${tools}</div>`;
 }
 
 function centerHTML() {
@@ -711,6 +761,9 @@ function render() {
 document.addEventListener('click', e => {
   const t = e.target.closest('button'); if (!t) return;
   if (t.dataset.a) { send(JSON.parse(t.dataset.a)); return; }
+  if (t.dataset.face !== undefined) { signMenu = !signMenu; renderFelt(); return; }
+  if (t.dataset.sign) { signMenu = false; sock && connected && sock.send(JSON.stringify({ type: 'sign', seat: viewSeat(), sign: t.dataset.sign })); renderFelt(); return; }
+  if (t.dataset.signclose !== undefined) { signMenu = false; renderFelt(); return; }
   if (t.dataset.step) { envAmt = Math.max(2, Math.min(30, envAmt + +t.dataset.step)); renderActions(); return; }
   if (t.dataset.sit !== undefined) {
     if (!myNick()) { nickIn.focus(); toast('Type your name first.'); return; }
