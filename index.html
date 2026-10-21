@@ -21,7 +21,7 @@
   --turn:#f2c14e;
   --display:"Grenze", "Iowan Old Style", Georgia, serif;
   --body:"Alegreya Sans", "Gill Sans", "Segoe UI", system-ui, sans-serif;
-  --cw:clamp(56px, 6vw, 96px); --cw-s:clamp(28px, 3vw, 46px);
+  --cw:clamp(66px, 7.2vw, 116px); --cw-s:clamp(28px, 3vw, 46px);
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root{
@@ -70,7 +70,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .lc{border-bottom:3px solid var(--line);padding:2px 6px 4px;min-width:0}
 .lc b{font-family:var(--display);font-weight:600;font-size:1.15rem;display:block;line-height:1.1}
 .lc span{font-size:.78rem;color:var(--muted);display:block;min-height:1.1em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lc.now{border-color:var(--turn)}.lc.done{border-color:var(--muted)}
+.lc.now{border-color:var(--turn);background:var(--panel);border-radius:6px 6px 0 0}.lc.done{border-color:var(--muted)}
 
 /* table */
 .felt{background-color:var(--table);background-image:var(--table-img, radial-gradient(120% 90% at 50% 40%, rgba(255,255,255,.08), rgba(0,0,0,.28)));
@@ -81,6 +81,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .seat{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;position:relative;padding:6px 8px;border-radius:14px;background:rgba(0,0,0,.16)}
 .seat.top{grid-area:top}.seat.left{grid-area:left;align-self:center}.seat.right{grid-area:right;align-self:center}.seat.bottom{grid-area:bottom}
 .seat.turn{box-shadow:0 0 0 3px var(--turn)}
+.seat.turn.me{animation:myturn 1.8s ease-in-out infinite}
+@keyframes myturn{0%,100%{box-shadow:0 0 0 3px var(--turn),0 0 0 0 rgba(242,193,78,.55)}50%{box-shadow:0 0 0 3px var(--turn),0 0 18px 6px rgba(242,193,78,.45)}}
+.yourturn{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;background:var(--turn);color:#2a201a;padding:2px 8px;border-radius:999px;text-shadow:none}
 .nm{display:flex;align-items:center;flex-wrap:wrap;justify-content:center;gap:6px;font-weight:700;max-width:100%}
 .nm .dot{width:.6em;height:.6em;border-radius:50%;flex:none;box-shadow:0 0 0 2px rgba(255,255,255,.6)}
 .nm .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:12em}
@@ -123,6 +126,10 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
   box-shadow:0 2px 5px rgba(0,0,0,.4);transition:transform .15s;background-color:var(--paper);border:1px solid var(--paper-edge);overflow:hidden}
 .card.img{background-image:var(--deck-img);background-size:1000% 400%;background-position:calc(var(--x) * 100% / 9) calc(var(--y) * 100% / 3);border:none}
 .card.file{background-size:100% 100%;background-position:center;border:none;background-color:#fff}
+.card .num{position:absolute;top:3%;right:4%;min-width:34%;padding:3% 3% 2%;border-radius:calc(var(--cw)*.07);
+  background:rgba(255,255,255,.94);color:var(--c);font-family:var(--display);font-weight:700;font-size:calc(var(--cw)*.32);
+  line-height:1;text-align:center;font-variant-numeric:tabular-nums;box-shadow:0 1px 3px rgba(0,0,0,.35);text-shadow:none;pointer-events:none}
+.card.o .num{color:#94650a}
 .card.back{background:var(--back-img, url("/cards/backside.jpg")), var(--back);background-size:cover;background-position:center;border-color:#00000040}
 .card .r{position:absolute;top:3px;left:5px;font-family:var(--display);font-weight:700;font-size:calc(var(--cw)*.24);line-height:1;color:var(--c)}
 .card .r2{top:auto;left:auto;bottom:3px;right:5px;transform:rotate(180deg)}
@@ -141,7 +148,9 @@ button.card.sel{transform:translateY(-14px);box-shadow:0 0 0 3px var(--turn),0 6
 /* actions on the table */
 .tact{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin-top:4px;max-width:100%}
 .tact .msg{color:var(--felt-ink);font-size:.95rem;width:100%;text-align:center}
-.tact .btn{background:var(--paper);color:#2a201a;text-shadow:none;box-shadow:0 2px 4px rgba(0,0,0,.35)}
+.tact .btn{background:var(--paper);color:#2a201a;text-shadow:none;box-shadow:0 2px 4px rgba(0,0,0,.35);padding:10px 18px;font-size:1rem;min-height:44px}
+.tact .btn:hover:not(:disabled){filter:brightness(1.06)}
+.tact .btn:active:not(:disabled){transform:translateY(1px)}
 .tact .btn.alt{background:rgba(0,0,0,.3);color:var(--felt-ink);border:1px solid var(--felt-ink)}
 .tact .btn.hot{background:var(--accent);color:#fff}
 .tact .step{border-color:var(--felt-ink);background:rgba(0,0,0,.3)}
@@ -229,7 +238,7 @@ legend{font-family:var(--display);font-weight:600;font-size:1.2rem;padding:0;mar
   .tact .btn{padding:7px 11px}
   .seat{padding:4px}
 }
-@media (prefers-reduced-motion:reduce){.card{transition:none}.decl.anim{animation:none}}
+@media (prefers-reduced-motion:reduce){.seat.turn.me{animation:none}.card{transition:none}.decl.anim{animation:none}}
 </style>
 <style id="customCards"></style>
 </head>
@@ -242,7 +251,6 @@ legend{font-family:var(--display);font-weight:600;font-size:1.2rem;padding:0;mar
     <input id="nick" maxlength="20" placeholder="e.g. Ane">
     <button class="ghost" id="inviteBtn" type="button">Copy invite link</button>
     <button class="ghost" id="settingsBtn" type="button">Settings</button>
-    <button class="ghost" id="resetBtn" type="button">Reset table</button>
   </div>
 </div>
 
@@ -319,6 +327,11 @@ legend{font-family:var(--display);font-weight:600;font-size:1.2rem;padding:0;mar
       </div>
       <div class="rowf"><button class="btn sm" type="button" id="cfgSave">Save match settings</button><span class="hint" id="cfgNote"></span></div>
     </fieldset>
+    <fieldset>
+      <legend>Start over</legend>
+      <p class="hint">Clears the scores and the current hand for everyone. Players stay in their seats.</p>
+      <div class="rowf"><button class="ghost" id="resetBtn" type="button">Reset table</button></div>
+    </fieldset>
   </div>
 </dialog>
 <div class="toast" id="toast" hidden></div>
@@ -381,7 +394,7 @@ function cardHTML(c, opts = {}) {
   const deck = deckStyle(), drawn = deck === 'drawn', sheet = deck === 'custom';
   const cls = `card face ${s} ${drawn ? 'drawn' : sheet ? 'img' : 'file'}${opts.sel ? ' sel' : ''}`;
   const style = drawn ? '' : sheet ? ` style="--x:${RANKS.indexOf(r)};--y:${SUITS.indexOf(s)}"` : ` style="background-image:url('/cards/${SUIT_NAME[s]}_${r}.jpg')"`;
-  const inner = drawn ? `<span class="r">${r}</span>${SUIT_SVG[s]}<span class="r r2">${r}</span>` : '';
+  const inner = drawn ? `<span class="r">${r}</span>${SUIT_SVG[s]}<span class="r r2">${r}</span>` : `<span class="num" aria-hidden="true">${r}</span>`;
   const attrs = `class="${cls}" data-c="${c}"${style} aria-label="${cardName(c)}"`;
   if (opts.btn !== undefined) return `<button type="button" ${attrs} data-pick="${opts.btn}" aria-pressed="${!!opts.sel}">${inner}</button>`;
   return `<div ${attrs}>${inner}</div>`;
@@ -561,7 +574,8 @@ function coinsHTML(x) {
 function seatHTML(x, pos, vs) {
   const seat = st.seats[x];
   const turn = actingSeats().includes(x) && ['mus', 'lance'].includes(st.phase);
-  const cls = `seat ${pos}${turn ? ' turn' : ''}${pos === 'bottom' ? '' : ' small'}`;
+  const meTurn = turn && st.seats[x] && st.seats[x].mine;
+  const cls = `seat ${pos}${turn ? ' turn' : ''}${meTurn ? ' me' : ''}${pos === 'bottom' ? '' : ' small'}`;
   if (!seat) {
     return `<div class="${cls}"><div class="nm"><span class="dot" style="background:${TEAMVAR[team(x)]}"></span><span class="t">Seat ${x + 1} · ${esc(tn(st, team(x)))}</span></div>
       ${connected ? `<button class="seatbtn" type="button" data-sit="${x}">Sit here</button>` : '<span class="sum">empty</span>'}${coinsHTML(x)}</div>`;
@@ -577,11 +591,11 @@ function seatHTML(x, pos, vs) {
   }
   const conf = confirmKey === 'free' + x;
   const tools = mine ? `<button class="x" type="button" data-stand="${x}">stand up</button>`
-    : connected ? `<button class="x" type="button" data-free="${x}">${conf ? 'tap again to free seat' : 'free seat'}</button>` : '';
+    : connected && !seat.online ? `<button class="x" type="button" data-free="${x}">${conf ? 'tap again to free this seat' : 'player left? free this seat'}</button>` : '';
   const mano = st.phase !== 'waiting' && x === st.mano ? '<span class="hand-up" role="img" aria-label="Mano, plays first" title="Mano: plays first in every lance">✋</span>' : '';
   const said = st.said[x] ? `<span class="said${/Órdago|Envido|más/.test(st.said[x]) ? ' big' : ''}">${esc(st.said[x])}</span>` : '';
   return `<div class="${cls}">
-    <div class="nm">${mano}<span class="dot" style="background:${TEAMVAR[team(x)]}"></span><span class="t">${esc(seat.nick)}${mine ? ' (you)' : ''}${seat.online ? '' : ' · away'}</span></div>
+    <div class="nm">${mano}<span class="dot" style="background:${TEAMVAR[team(x)]}"></span><span class="t">${esc(seat.nick)}${mine ? ' (you)' : ''}${seat.online ? '' : ' · away'}</span>${meTurn ? '<span class="yourturn">Your turn</span>' : ''}</div>
     ${coinsHTML(x)}${said}${declHTML(x)}<div class="hand">${cards}</div>${pos === 'bottom' && mine ? `<div class="tact" id="tact">${actionsHTML()}</div>` : ''}${tools}</div>`;
 }
 
@@ -647,7 +661,7 @@ function actionsHTML() {
     h = `<span class="msg">${mine.length ? (full ? 'Everyone is here.' : 'Waiting for the others to sit down.') : 'Type your name above, then pick a seat.'}</span>` + (full && mine.length ? B('Deal', { t: 'start' }, 'hot') : '');
   } else if (!mine.length) h = '<span class="msg">You are watching. Grab an empty seat to join.</span>';
   else if (st.phase === 'mus') {
-    h = mine.includes(st.musTurn) && vs === st.musTurn ? `<span class="msg">Your call, ${esc(nm(st, vs))}.</span>` + B('Mus', { t: 'mus', s: vs, yes: true }, 'alt') + B('No hay mus', { t: 'mus', s: vs, yes: false }, 'hot')
+    h = mine.includes(st.musTurn) && vs === st.musTurn ? `<span class="msg">Mus or no mus?</span>` + B('Mus', { t: 'mus', s: vs, yes: true }, 'alt') + B('No hay mus', { t: 'mus', s: vs, yes: false }, 'hot')
       : `<span class="msg">Waiting for ${esc(nm(st, st.musTurn))}.</span>`;
   } else if (st.phase === 'discard') {
     h = !st.discardSel[vs] ? `<span class="msg">Tap the cards you want to change.</span><button type="button" class="btn hot" data-discard="${vs}"${sel.size ? '' : ' disabled'}>Discard ${sel.size || ''}</button>`
@@ -687,7 +701,11 @@ function renderChat() {
   }).join('');
   if (near || !renderChat.once) { box.scrollTop = box.scrollHeight; renderChat.once = true; }
 }
-function render() { if (!st) return; renderScores(); renderFelt(); }
+function render() {
+  if (!st) return; renderScores(); renderFelt();
+  const mine = mySeats(), myTurn = actingSeats().some(x => mine.includes(x)) && ['mus', 'lance', 'discard'].includes(st.phase);
+  document.title = (myTurn ? '● Your turn · ' : '') + 'Mus Mahaia · ' + ROOM;
+}
 
 /* ---------- events ---------- */
 document.addEventListener('click', e => {
