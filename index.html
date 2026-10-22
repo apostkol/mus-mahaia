@@ -72,11 +72,25 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
   background-size:cover;background-position:center;border-radius:20px;color:var(--felt-ink);
   box-shadow:inset 0 0 0 7px rgba(0,0,0,.2), 0 8px 22px rgba(0,0,0,.2);text-shadow:0 1px 2px rgba(0,0,0,.5)}
 .seat{position:absolute;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px 4px;border-radius:14px;background:rgba(0,0,0,.2);z-index:2}
-.seat.small{width:max(214px, calc(var(--cw-s) * 4 + 12px + 20px))}
+.seat{--av:calc(var(--cw) * 1.3)}
+.seat.small{--av:calc(var(--cw-s) * 3.1)}
+.seat.top{width:calc(var(--cw-s) * 4 + var(--av) + 42px)}
+.seat.left,.seat.right{width:max(calc(var(--cw-s) * 4 + 34px), calc(var(--av) + 24px))}
+.seat.left .seatrow,.seat.right .seatrow{flex-direction:column;align-items:center;gap:4px}
+.nm .coins{height:auto;font-size:.8rem;gap:3px;margin-left:4px}
+.seatrow{display:flex;align-items:flex-end;gap:8px}
+.avatar{width:var(--av);aspect-ratio:120/132;flex:none;display:block;background:none;border:none;padding:0;border-radius:10px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+.avatar svg{width:100%;height:100%;display:block}
+.avatar.empty{visibility:hidden}
+button.avatar{cursor:pointer;transition:transform .12s}
+button.avatar:hover{transform:translateY(-2px)}
+button.avatar:focus-visible{outline:2px solid var(--turn);outline-offset:3px}
+.signmenu button span.mini{width:30px;height:33px;display:block}
+.signmenu button span.mini svg{width:100%;height:100%;display:block}
 .seat.top{top:12px;left:50%;transform:translateX(-50%)}
-.seat.left{left:14px;top:47%;transform:translateY(-50%)}
-.seat.right{right:14px;top:47%;transform:translateY(-50%)}
-.seat.bottom{bottom:10px;left:50%;transform:translateX(-50%);width:max(480px, calc(var(--cw) * 4 + 18px + 24px))}
+.seat.left{left:14px;top:55%;transform:translateY(-50%)}
+.seat.right{right:14px;top:55%;transform:translateY(-50%)}
+.seat.bottom{bottom:10px;left:50%;transform:translateX(-50%);width:max(520px, calc(var(--cw) * 5.3 + 54px))}
 .seat .nm{height:1.9em;flex-wrap:nowrap}
 .seat .coins{height:1.75em;overflow:hidden;flex-wrap:nowrap}
 .seat .hand{height:calc(var(--cw) * 1.6);align-items:center}
@@ -125,16 +139,17 @@ button.face:focus-visible{outline:2px solid var(--turn);outline-offset:2px}
 @keyframes pop{from{opacity:0;transform:translateY(6px) scale(.6)}to{opacity:1;transform:none}}
 
 /* rounds panel, top left of the table */
-.rounds{position:absolute;top:12px;left:14px;width:clamp(150px, 19%, 230px);display:grid;gap:7px;z-index:1;background:rgba(0,0,0,.24);border-radius:12px;padding:9px 12px}
+.rounds{position:absolute;top:12px;left:14px;width:clamp(200px, 25%, 290px);display:grid;gap:4px;z-index:1;background:rgba(0,0,0,.24);border-radius:12px;padding:9px 12px}
 .rounds:empty{display:none}
-.rd b{font-family:var(--display);font-weight:600;font-size:1.12rem;display:flex;align-items:center;gap:7px;line-height:1.15}
-.rd span{display:block;font-size:.82rem;color:var(--felt-muted);line-height:1.25}
+.rd{display:grid;grid-template-columns:4.4em 1fr;align-items:baseline;gap:6px}
+.rd b{font-family:var(--display);font-weight:600;font-size:1.05rem;display:flex;align-items:center;gap:6px;line-height:1.15}
+.rd span{display:block;font-size:.8rem;color:var(--felt-muted);line-height:1.25}
 .rd.now b{color:#fff}
 .rd.now b::before{content:"";width:.5em;height:.5em;border-radius:50%;background:var(--turn);box-shadow:0 0 0 3px rgba(242,193,78,.3);flex:none}
 .rd.now span{color:var(--turn)}
 
 /* centre: the deck, and what is happening */
-.center{position:absolute;left:50%;top:39%;transform:translate(-50%,-50%);width:min(30%,300px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;z-index:1}
+.center{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:min(30%,300px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;z-index:1}
 .center.wide{width:min(58%,480px);z-index:6}
 .center h3{font-family:var(--display);font-weight:600;font-size:1.6rem;margin:0;line-height:1.1}
 .center p{margin:0;color:var(--felt-muted);font-size:.95rem}
@@ -252,6 +267,17 @@ fieldset{border:none;padding:0;margin:0;display:grid;gap:8px}
 legend{font-family:var(--display);font-weight:600;font-size:1.2rem;padding:0;margin-bottom:6px}
 .hint{font-size:.85rem;color:var(--muted);margin:0}
 .swatches{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.swatches.small .swatch{width:1.7em;height:1.7em}
+.avedit{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.avprev{width:120px;flex:none;background:var(--table);border-radius:12px;padding:8px 8px 0}
+.avprev svg{width:100%;display:block}
+.avopts{display:grid;gap:8px;flex:1;min-width:200px}
+.avopts label{display:flex;gap:8px;align-items:center;justify-content:space-between;max-width:260px}
+.avopts select{padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);flex:1}
+.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin:8px 0;max-width:820px}
+.legend figure{margin:0;background:var(--table);color:var(--felt-ink);border-radius:10px;padding:6px 6px 8px;text-align:center}
+.legend svg{width:64px;display:block;margin:0 auto 4px}
+.legend b{display:block;font-size:.85rem}.legend span{display:block;font-size:.72rem;color:var(--felt-muted);line-height:1.25}
 .swatch{width:2.2em;height:2.2em;border-radius:50%;border:2px solid var(--line);padding:0}
 .swatch[aria-pressed="true"]{outline:3px solid var(--turn);outline-offset:2px}
 .swatches input[type=color]{width:2.6em;height:2.2em;border:none;background:none;padding:0}
@@ -276,17 +302,21 @@ legend{font-family:var(--display);font-weight:600;font-size:1.2rem;padding:0;mar
 @media (max-width:620px){
   .coins{font-size:.75rem}
   .felt{height:680px}
-  .seat.small{width:116px;min-width:0;padding:4px 5px;font-size:.82rem}
+  .seat.small{--av:calc(var(--cw-s) * 3.6);min-width:0;padding:4px 5px;font-size:.82rem}
+  .seat.top,.seat.left,.seat.right{width:max(calc(var(--cw-s) * 4 + 24px), calc(var(--av) + 14px))}
+  .seat.top .seatrow{flex-direction:column;align-items:center;gap:3px}
+  .seat.bottom{--av:var(--cw)}
+  .seatrow{gap:4px}
   .seat.small .nm .t{max-width:5.2em}
   .seat.small .botchip,.seat.small .yourturn{display:none}
   .seat.small .face{font-size:1.35em}
-  .seat.top{top:6px}.seat.left{left:6px;top:35%}.seat.right{right:6px;top:35%}
+  .seat.top{top:6px}.seat.left{left:6px;top:43%}.seat.right{right:6px;top:43%}
   .seat.bottom{width:calc(100% - 12px);bottom:6px;padding:4px 6px}
   .seat .tact{height:6.2em}
   .seat.top .callouts,.seat.left .callouts,.seat.right .callouts{left:50%;right:auto;top:calc(100% + 4px);transform:translateX(-50%);align-items:center}
   .seat.bottom .callouts{right:auto;left:50%;top:auto;bottom:calc(100% + 6px);transform:translateX(-50%);align-items:center}
-  .rounds{top:6px;left:6px;width:31%;padding:5px 7px;gap:4px}.rd b{font-size:.86rem}.rd span{font-size:.66rem}
-  .center{top:35%;width:30%}
+  .rounds{top:6px;left:6px;width:31%;padding:5px 7px;gap:4px}.rd{display:block}.rd b{font-size:.86rem}.rd span{font-size:.66rem}
+  .center{top:42%;width:30%}
   .center.wide{width:94%;top:40%;background:rgba(20,14,10,.92);border-radius:12px;padding:10px;box-shadow:0 8px 24px rgba(0,0,0,.45)}
   .status{font-size:.8rem}.status b{font-size:1.05rem}
   .phone-only{display:inline-block}
@@ -322,7 +352,8 @@ legend{font-family:var(--display);font-weight:600;font-size:1.2rem;padding:0;mar
       <p>Mus: everyone says Mus or No hay mus in turn. If all four say Mus, each player discards 1–4 cards; discards go to a pile, and when the deck runs out that pile is shuffled into a new deck. The first No hay mus starts the betting.</p>
       <p>Lances: Grande (high cards), Chica (low cards), Pares, Juego (31 or more: 31, 32, 40, 37…33). If nobody has juego, Punto is played (closest to 30). Ties go to whoever is closest to the mano. Before Pares and Juego, each player says sí or no in turn.</p>
       <p>Envido opens at 2; you can raise, accept (Quiero) or refuse (No quiero). A refused bet scores the previous stake (1 for a first bet). Accepted bets and passed lances are counted at the end of the hand. Bonuses: par 1, medias 2, duples 3; juego 2, 31 scores 3; punto 1. An accepted Órdago wins the game on that lance. Each game is to 40; a match is the best of the chosen number of games.</p>
-      <p>Signs (keinuak): tap your own face 🙂 next to your name to make a sign about your hand. Everyone at the table sees it for a moment, so your partner should watch, and so will your opponents. Two kings 🫦 (biting the lower lip), three kings 🫦 tilted (biting one side), two aces 😛 (tongue out), three aces 😛 tilted (tongue to one side), a pair 🙂 tilted (head tilt), three of a kind 🫤 (lips to one side), two pairs 🤨 (eyebrows up), 31 😉 (wink), nothing 😌 (eyes closed).</p>
+      <p>Signs (keinuak): tap your own avatar next to your cards to make a sign about your hand. Everyone at the table sees it for half a second, so your partner should watch, and so will your opponents.</p>
+      <div class="legend" id="signLegend"></div>
       <p>✋ marks the mano, who plays first in every lance. Coins: each team's points are shown as coins. One partner holds the blue coins (1 point each), the other holds the red coins (5 points each).</p>
     </details>
   </section>
@@ -342,6 +373,22 @@ legend{font-family:var(--display);font-weight:600;font-size:1.2rem;padding:0;mar
   <div class="shead"><h2>Settings</h2><button class="ghost" type="button" id="closeSettings">Done</button></div>
   <div class="sbody">
     <p class="hint">Text size, table look and cards are saved in this browser and only change what you see. Match settings and team names are shared with the table.</p>
+    <fieldset>
+      <legend>Your avatar</legend>
+      <div class="avedit">
+        <div class="avprev" id="avPrev"></div>
+        <div class="avopts">
+          <label>Hair <select id="avHair"></select></label>
+          <div class="swatches small" id="avHairColor" aria-label="Hair colour"></div>
+          <label>Shirt <select id="avShirt"></select></label>
+          <div class="swatches small" id="avShirtColor" aria-label="Shirt colour"></div>
+          <label>Glasses <select id="avGlasses"></select></label>
+          <label>Facial hair <select id="avFacial"></select></label>
+          <div class="rowf"><button class="btn alt sm" type="button" id="avRandom">Random look</button></div>
+        </div>
+      </div>
+      <p class="hint">Everyone has the same face. Others see your avatar when you sit down.</p>
+    </fieldset>
     <fieldset>
       <legend>Text size</legend>
       <div class="rowf"><button class="btn alt sm" type="button" data-fs="-1" aria-label="Smaller text">A−</button>
@@ -546,6 +593,34 @@ const declSeen = new Map();
 const nickIn = $('nick');
 nickIn.value = store.get('mus-nick') || '';
 const myNick = () => nickIn.value.trim().slice(0, 20);
+let myLook;
+try { myLook = MusEngine.cleanLook(JSON.parse(store.get('mus-look'))); if (!store.get('mus-look')) throw 0; }
+catch { myLook = MusEngine.randomLook(); store.set('mus-look', JSON.stringify(myLook)); }
+const HAIR_N = { short: 'Short', side: 'Side parting', long: 'Long', curly: 'Curly', bun: 'Bun', buzz: 'Buzz cut', bald: 'Bald' };
+const SHIRT_N = { tee: 'T-shirt', vneck: 'V-neck', collar: 'Collared shirt', hoodie: 'Hoodie' };
+const GLASS_N = { none: 'None', round: 'Round', square: 'Square' };
+const FACIAL_N = { none: 'None', stubble: 'Stubble', moustache: 'Moustache', beard: 'Beard' };
+function setLook(patch) {
+  myLook = MusEngine.cleanLook({ ...myLook, ...patch });
+  store.set('mus-look', JSON.stringify(myLook));
+  fillAvatarEditor(); renderLegend();
+  if (seated() && connected) sock.send(JSON.stringify({ type: 'act', a: { t: 'look', look: myLook } }));
+}
+function fillAvatarEditor() {
+  const L = MusEngine.LOOK, opt = (names, cur) => Object.entries(names).map(([v, n]) => `<option value="${v}"${v === cur ? ' selected' : ''}>${n}</option>`).join('');
+  $('avPrev').innerHTML = avatarSVG(myLook, '');
+  $('avHair').innerHTML = opt(HAIR_N, myLook.hair); $('avShirt').innerHTML = opt(SHIRT_N, myLook.shirt);
+  $('avGlasses').innerHTML = opt(GLASS_N, myLook.glasses); $('avFacial').innerHTML = opt(FACIAL_N, myLook.facial);
+  const sw = (key, list) => list.map(c => `<button type="button" class="swatch" data-avset="${key}" data-v="${c}" style="background:${c}" aria-label="${c}" aria-pressed="${myLook[key] === c}"></button>`).join('');
+  $('avHairColor').innerHTML = '<span class="hint">Hair colour</span>' + sw('hairColor', L.hairColor);
+  $('avShirtColor').innerHTML = '<span class="hint">Shirt colour</span>' + sw('shirtColor', L.shirtColor) + `<input type="color" id="avShirtCustom" value="${myLook.shirtColor}" aria-label="Any shirt colour">`;
+  $('avShirtCustom').oninput = e => setLook({ shirtColor: e.target.value });
+}
+function renderLegend() {
+  $('signLegend').innerHTML = MusEngine.SIGNS.map(k => `<figure>${avatarSVG(myLook, k)}<b>${SIGN_INFO[k].name}</b><span>${SIGN_INFO[k].how}</span></figure>`).join('');
+}
+['avHair', 'avShirt', 'avGlasses', 'avFacial'].forEach((id, i) => $(id).addEventListener('change', e => setLook({ [['hair', 'shirt', 'glasses', 'facial'][i]]: e.target.value })));
+$('avRandom').onclick = () => setLook(MusEngine.randomLook());
 let acted = false;
 const PLAY = ['mus', 'discard', 'pass', 'bet', 'raise', 'ordago', 'quiero', 'noquiero', 'start', 'next', 'newgame', 'award'];
 function send(a) {
@@ -655,15 +730,15 @@ function renderScores() {
 function roundResult(i) {
   const r = st.results[i], T = t => esc(tn(st, t));
   if (!r) return null;
-  if (r.s === 'paso') return 'Everyone passed';
-  if (r.s === 'querido') return `Bet accepted · ${r.stake}`;
-  if (r.s === 'rechazado') return `Bet refused · ${T(r.team)} +${r.prev}`;
+  if (r.s === 'paso') return 'All passed';
+  if (r.s === 'querido') return `Accepted · ${r.stake}`;
+  if (r.s === 'rechazado') return `Refused · ${T(r.team)} +${r.prev}`;
   if (r.s === 'nobet') {
     const d = i === 2 ? st.decl && st.decl.pares : st.decl && st.decl.juego;
     const ts = d ? [...new Set([0, 1, 2, 3].filter(x => d[x]).map(team))] : [];
-    return ts.length === 1 ? `Only ${T(ts[0])} have ${i === 2 ? 'pares' : 'juego'}` : 'No betting';
+    return ts.length === 1 ? `Only ${T(ts[0])}` : 'No betting';
   }
-  if (r.s === 'none') return i === 2 ? 'No one had pares' : 'No one had juego';
+  if (r.s === 'none') return 'Nobody had any';
   return null;
 }
 function roundsHTML() {
@@ -723,44 +798,133 @@ function coinsHTML(x) {
   return `<div class="coins" title="${n} red coin${n === 1 ? '' : 's'}, 5 points each">${'<span class="coin red">5</span>'.repeat(Math.min(n, 8))}</div>`;
 }
 
-/* ---------- faces and signs (keinuak) ---------- */
-const FACE = '🙂';
+/* ---------- avatars ---------- */
+// Everyone has the same face; hair, shirt, glasses and facial hair change. A sign changes the
+// expression (or the shoulders) of that same avatar for half a second.
+const SKIN = '#f2c7a2', SKIN_SH = '#dba27c', LIP = '#c4625a', INK = '#33241c', MOUTH = '#5b2520', TONGUE = '#e27a88';
+const EXPR = {
+  kings2: { mouth: 'biteC' }, kings3: { mouth: 'biteS' },
+  aces2: { mouth: 'tongueC' }, aces3: { mouth: 'tongueS' },
+  mediak: { mouth: 'pursed' }, dupleak: { brows: 'up' },
+  juego31: { eyes: 'wink' }, bonita: { mouth: 'kiss' },
+  thirty: { lift: [17, 17] }, twentynine: { lift: [0, 19] },
+  itsuarena: { eyes: 'closed' }
+};
+function shade(hex, f) { // darker (f<1) or lighter (f>1) version of a colour
+  const n = parseInt(hex.slice(1), 16), c = [n >> 16, (n >> 8) & 255, n & 255].map(v => Math.max(0, Math.min(255, Math.round(f < 1 ? v * f : v + (255 - v) * (f - 1)))));
+  return '#' + c.map(v => v.toString(16).padStart(2, '0')).join('');
+}
+function avatarSVG(look, sign) {
+  const L = look || {}, e = EXPR[sign] || {};
+  const hc = L.hairColor || '#3b2a20', sc = L.shirtColor || '#2f62c9', sd = shade(sc, 0.72);
+  const [liftL, liftR] = e.lift || [0, 0];
+  const yl = 104 - liftL, yr = 104 - liftR, nl = yl - 7, nr = yr - 7, nm = Math.min(nl, nr);
+  const o = [];
+  // hair behind the head
+  if (L.hair === 'long') o.push(`<path d="M30 46 Q28 14 60 14 Q92 14 90 46 L93 98 Q84 104 78 92 L78 56 L42 56 L42 92 Q36 104 27 98 Z" fill="${hc}"/>`);
+  if (L.hair === 'bun') o.push(`<circle cx="60" cy="13" r="10" fill="${hc}"/>`);
+  // hood behind the neck
+  if (L.shirt === 'hoodie') o.push(`<path d="M30 ${nm + 8} Q32 ${nm - 22} 60 ${nm - 22} Q88 ${nm - 22} 90 ${nm + 8} Z" fill="${sd}"/>`);
+  // neck
+  o.push(`<rect x="50" y="70" width="20" height="${Math.max(nl, nr) - 62}" rx="6" fill="${SKIN_SH}"/>`);
+  // shoulders and torso (each shoulder can be lifted)
+  o.push(`<path d="M2 132 L2 ${yl + 18} Q2 ${yl} 22 ${yl - 3} L47 ${nl} Q60 ${nm + 3} 73 ${nr} L98 ${yr - 3} Q118 ${yr} 118 ${yr + 18} L118 132 Z" fill="${sc}"/>`);
+  o.push(`<path d="M30 ${yl + 8} Q32 ${yl + 20} 34 132 M90 ${yr + 8} Q88 ${yr + 20} 86 132" stroke="${sd}" stroke-width="1.6" fill="none" opacity=".55"/>`);
+  // neckline
+  if (L.shirt === 'vneck') o.push(`<path d="M47 ${nl} L60 ${nm + 17} L73 ${nr} Z" fill="${SKIN_SH}"/><path d="M47 ${nl} L60 ${nm + 17} L73 ${nr}" stroke="${sd}" stroke-width="2.5" fill="none"/>`);
+  else if (L.shirt === 'collar') o.push(`<path d="M50 ${nl} L60 ${nm + 12} L70 ${nr} Z" fill="${SKIN_SH}"/><path d="M45 ${nl - 1} L58 ${nm + 13} L49 ${nm + 15} Z M75 ${nr - 1} L62 ${nm + 13} L71 ${nm + 15} Z" fill="${shade(sc, 1.55)}" stroke="${sd}" stroke-width="1"/><circle cx="60" cy="${nm + 20}" r="1.3" fill="${sd}"/><circle cx="60" cy="${nm + 27}" r="1.3" fill="${sd}"/>`);
+  else if (L.shirt === 'hoodie') o.push(`<path d="M47 ${nl} Q60 ${nm + 10} 73 ${nr}" stroke="${sd}" stroke-width="5" fill="none"/><path d="M55 ${nm + 7} L54 ${nm + 22} M65 ${nm + 7} L66 ${nm + 22}" stroke="#f2f0ea" stroke-width="1.6" stroke-linecap="round"/>`);
+  else o.push(`<path d="M47 ${nl} Q60 ${nm + 10} 73 ${nr} Z" fill="${SKIN_SH}"/><path d="M47 ${nl} Q60 ${nm + 10} 73 ${nr}" stroke="${sd}" stroke-width="3" fill="none"/>`);
+  // ears and head
+  o.push(`<ellipse cx="34" cy="52" rx="5" ry="7" fill="${SKIN_SH}"/><ellipse cx="86" cy="52" rx="5" ry="7" fill="${SKIN_SH}"/>`);
+  o.push(`<ellipse cx="60" cy="48" rx="26" ry="29" fill="${SKIN}"/>`);
+  // hair on top
+  const cap = `M34 44 Q33 14 60 14 Q87 14 86 44 Q80 26 60 24 Q40 26 34 44 Z`;
+  if (L.hair === 'short' || L.hair === 'long' || L.hair === 'bun') o.push(`<path d="${cap}" fill="${hc}"/>`);
+  if (L.hair === 'side') o.push(`<path d="M34 46 Q31 13 62 14 Q89 16 86 42 Q83 27 70 25 Q58 29 45 27 Q37 33 34 46 Z" fill="${hc}"/>`);
+  if (L.hair === 'buzz') o.push(`<path d="M35 40 Q35 18 60 18 Q85 18 85 40 Q79 27 60 26 Q41 27 35 40 Z" fill="${hc}" opacity=".7"/>`);
+  if (L.hair === 'curly') o.push([[37, 36, 8], [43, 25, 9], [54, 19, 9], [66, 19, 9], [77, 25, 9], [83, 36, 8], [60, 26, 9]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${hc}"/>`).join(''));
+  // eyebrows
+  const up = e.brows === 'up', by = up ? 33 : 40, bq = up ? 6 : 3;
+  const browC = L.hair === 'bald' || L.hair === 'buzz' ? shade(hc, 0.7) : hc;
+  o.push(`<path d="M43 ${by} Q49 ${by - bq} 55 ${by} M65 ${by} Q71 ${by - bq} 77 ${by}" stroke="${browC}" stroke-width="${up ? 3.2 : 2.6}" fill="none" stroke-linecap="round"/>`);
+  // eyes
+  const openEye = x => (up ? `<circle cx="${x}" cy="48" r="5" fill="#fff"/>` : '') + `<circle cx="${x}" cy="48" r="3.4" fill="${INK}"/><circle cx="${x + 1.1}" cy="46.9" r="1" fill="#fff"/>`;
+  const shut = x => `<path d="M${x - 4.5} 48 Q${x} 52 ${x + 4.5} 48" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+  if (e.eyes === 'closed') o.push(shut(50) + shut(70));
+  else if (e.eyes === 'wink') o.push(openEye(50) + shut(70));
+  else o.push(openEye(50) + openEye(70));
+  // nose and cheeks
+  o.push(`<path d="M60 52 Q56.5 60 59.5 61.5 Q61.5 62 63 60.5" stroke="${SKIN_SH}" stroke-width="2" fill="none" stroke-linecap="round"/>`);
+  o.push(`<circle cx="44" cy="60" r="4" fill="#e88b7c" opacity=".2"/><circle cx="76" cy="60" r="4" fill="#e88b7c" opacity=".2"/>`);
+  // facial hair (the mouth is drawn on top, so signs stay visible)
+  if (L.facial === 'stubble') o.push(`<path d="M37 56 Q38 76 60 78 Q82 76 83 56 Q78 70 60 71 Q42 70 37 56 Z" fill="${hc}" opacity=".22"/>`);
+  if (L.facial === 'beard') o.push(`<path d="M35 50 Q34 82 60 84 Q86 82 85 50 Q81 64 72 66 Q60 70 48 66 Q39 64 35 50 Z" fill="${hc}"/>`);
+  if (L.facial === 'moustache' || L.facial === 'beard') o.push(`<path d="M49 66 Q54 61.5 60 63.5 Q66 61.5 71 66 Q65 65.5 60 65.5 Q55 65.5 49 66 Z" fill="${hc}"/>`);
+  // mouth
+  const m = e.mouth;
+  if (m === 'biteC' || m === 'biteS') {
+    const tx = m === 'biteC' ? 56 : 62.5, lx = m === 'biteC' ? 0 : 1.5;
+    o.push(`<path d="M51 68 Q60 70 69 ${68 - lx}" stroke="${INK}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`);
+    o.push(`<path d="M52 70 Q60 77 68 ${70 - lx}" stroke="${LIP}" stroke-width="4" fill="none" stroke-linecap="round"/>`);
+    o.push(`<rect x="${tx}" y="67" width="8" height="5.5" rx="1.2" fill="#fff" stroke="#cfc6bd" stroke-width=".8"/><line x1="${tx + 4}" y1="67" x2="${tx + 4}" y2="72.5" stroke="#d8d0c6" stroke-width=".7"/>`);
+  } else if (m === 'tongueC' || m === 'tongueS') {
+    const side = m === 'tongueS';
+    o.push(`<ellipse cx="${side ? 62 : 60}" cy="68.5" rx="7" ry="3.6" fill="${MOUTH}" stroke="${LIP}" stroke-width="1.6"/>`);
+    o.push(side ? `<path d="M61 69 Q66 81 73 79 Q76 75 70 68.5 Z" fill="${TONGUE}" stroke="#c45b6a" stroke-width=".8"/>`
+                : `<path d="M54.5 69.5 Q54.5 81 60 82 Q65.5 81 65.5 69.5 Z" fill="${TONGUE}" stroke="#c45b6a" stroke-width=".8"/><path d="M60 72 L60 78" stroke="#c45b6a" stroke-width=".8"/>`);
+  } else if (m === 'pursed') {
+    o.push(`<path d="M53 70 Q59 69 63 68.5" stroke="${LIP}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`);
+    o.push(`<ellipse cx="68.5" cy="67.5" rx="6" ry="4.6" fill="${LIP}" transform="rotate(-22 68.5 67.5)"/><path d="M64.8 68 Q68.5 66 72.2 66.8 M66.5 64.6 L67.4 66.4 M70.2 64.2 L70.4 66.1 M66.2 70.6 L67.2 68.9" stroke="${MOUTH}" stroke-width="1" fill="none"/>`);
+  } else if (m === 'kiss') {
+    o.push(`<circle cx="60" cy="69" r="4.6" fill="${LIP}"/><circle cx="60" cy="69" r="1.9" fill="${MOUTH}"/>`);
+  } else {
+    o.push(`<path d="M51 67.5 Q60 74 69 67.5" stroke="${LIP}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`);
+  }
+  // glasses
+  if (L.glasses === 'round') o.push(`<g stroke="#2a2a2e" stroke-width="1.9" fill="rgba(255,255,255,.12)"><circle cx="50" cy="48" r="7.5"/><circle cx="70" cy="48" r="7.5"/></g><path d="M57.5 47.5 Q60 45.5 62.5 47.5 M42.5 47 L35 45 M77.5 47 L85 45" stroke="#2a2a2e" stroke-width="1.9" fill="none"/>`);
+  if (L.glasses === 'square') o.push(`<g stroke="#2a2a2e" stroke-width="2.2" fill="rgba(255,255,255,.12)"><rect x="41.5" y="42" width="17" height="12" rx="2.5"/><rect x="61.5" y="42" width="17" height="12" rx="2.5"/></g><path d="M58.5 47 L61.5 47 M41.5 46 L35 44.5 M78.5 46 L85 44.5" stroke="#2a2a2e" stroke-width="2.2" fill="none"/>`);
+  return `<svg viewBox="0 0 120 132" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${o.join('')}</svg>`;
+}
+
+/* ---------- signs (keinuak), shown by each player's avatar ---------- */
 const SIGN_INFO = {
-  kings2:   { e: '🫦', name: 'Two kings',      eu: 'Bi errege',  how: 'biting the middle of the lower lip' },
-  kings3:   { e: '🫦', tf: 'rotate(-28deg) translateX(-3px)', name: 'Three kings', eu: 'Hiru errege', how: 'biting one side of the lower lip' },
-  aces2:    { e: '😛', name: 'Two aces',       eu: 'Bi bateko',  how: 'sticking out the tongue' },
-  aces3:    { e: '😛', tf: 'rotate(28deg) translateX(3px)', name: 'Three aces', eu: 'Hiru bateko', how: 'tongue out to one side' },
-  pareak:   { e: '🙂', tf: 'rotate(-35deg)', name: 'A pair',     eu: 'Pareak',     how: 'tilting the head' },
-  mediak:   { e: '🫤', name: 'Three of a kind', eu: 'Mediak',    how: 'lips pursed to one side' },
-  dupleak:  { e: '🤨', name: 'Two pairs',      eu: 'Dupleak',    how: 'raising the eyebrows' },
-  juego31:  { e: '😉', name: '31',             eu: 'Hogeita hamaika', how: 'winking' },
-  itsuarena:{ e: '😌', name: 'Nothing',        eu: 'Itsuarena',  how: 'closing the eyes' }
+  kings2:     { name: 'Two kings',       how: 'bites the middle of the lower lip' },
+  kings3:     { name: 'Three kings',     how: 'bites one side of the lower lip' },
+  aces2:      { name: 'Two aces',        how: 'sticks out the tongue' },
+  aces3:      { name: 'Three aces',      how: 'sticks the tongue out to one side' },
+  mediak:     { name: 'Three of a kind', how: 'purses the lips to one side' },
+  dupleak:    { name: 'Two pairs',       how: 'raises the eyebrows' },
+  juego31:    { name: '31',              how: 'winks' },
+  bonita:     { name: 'La bonita',       how: 'makes a kiss: lips in a tight circle' },
+  thirty:     { name: '30',              how: 'lifts both shoulders' },
+  twentynine: { name: '29',              how: 'lifts one shoulder' },
+  itsuarena:  { name: 'Nothing',         how: 'closes the eyes' }
 };
 const SIGN_MS = 500;
 const showing = {};          // seat -> { sign, until }
 let signMenu = false, summaryHidden = false;
-function faceHTML(x, mineBtn) {
-  const sh = showing[x] && showing[x].until > Date.now() ? SIGN_INFO[showing[x].sign] : null;
-  const e = sh ? sh.e : FACE, tf = sh && sh.tf ? ` style="transform:${sh.tf}"` : '';
-  const cls = `face${sh ? ' signing' : ''}`;
-  if (mineBtn) return `<button type="button" class="${cls}" data-face="${x}" data-facefor="${x}" aria-label="Make a sign" title="Make a sign"${tf}>${e}</button>`;
-  return `<span class="${cls}" data-facefor="${x}" aria-hidden="true"${tf}>${e}</span>`;
+const signNow = x => (showing[x] && showing[x].until > Date.now() ? showing[x].sign : '');
+function avatarBox(x, mineBtn) {
+  const seat = st.seats[x]; if (!seat) return '<div class="avatar empty"></div>';
+  const svg = avatarSVG(seat.look, signNow(x));
+  if (mineBtn) return `<button type="button" class="avatar" data-face="${x}" data-avfor="${x}" aria-label="Make a sign" title="Make a sign">${svg}</button>`;
+  return `<div class="avatar" data-avfor="${x}">${svg}</div>`;
 }
-// A sign only changes the face itself, so nothing else on the table is redrawn or moves.
+// A sign only redraws that avatar, so nothing else on the table moves.
 function patchFace(x) {
-  const el = document.querySelector(`[data-facefor="${x}"]`); if (!el) return;
-  const sh = showing[x] && showing[x].until > Date.now() ? SIGN_INFO[showing[x].sign] : null;
-  el.textContent = sh ? sh.e : FACE; el.style.transform = sh && sh.tf ? sh.tf : '';
-  el.classList.remove('signing'); if (sh) { void el.offsetWidth; el.classList.add('signing'); }
+  const el = document.querySelector(`[data-avfor="${x}"]`); if (!el || !st || !st.seats[x]) return;
+  el.innerHTML = avatarSVG(st.seats[x].look, signNow(x));
 }
 function showSign(x, sign) {
   showing[x] = { sign, until: Date.now() + SIGN_MS };
   patchFace(x); setTimeout(() => patchFace(x), SIGN_MS + 20);
 }
 function signMenuHTML(x) {
-  const opts = signsFor(st.hands[x] || []);
-  return `<div class="signmenu">${opts.length ? `<p class="hint">Make a sign. Everyone can see it for half a second.</p>` + opts.map(k => `<button type="button" data-sign="${k}"><span>${SIGN_INFO[k].e}</span>${SIGN_INFO[k].name}</button>`).join('') : '<p class="hint">No sign fits your cards right now.</p>'}<button type="button" class="x2" data-signclose>Close</button></div>`;
+  const opts = signsFor(st.hands[x] || []), look = st.seats[x].look;
+  return `<div class="signmenu">${opts.length ? `<p class="hint">Make a sign. Everyone can see it for half a second.</p>` + opts.map(k => `<button type="button" data-sign="${k}"><span class="mini">${avatarSVG(look, k)}</span>${SIGN_INFO[k].name}</button>`).join('') : '<p class="hint">No sign fits your cards right now.</p>'}<button type="button" class="x2" data-signclose>Close</button></div>`;
 }
+
 const canSign = x => st && ['mus', 'discard', 'lance'].includes(st.phase) && st.seats[x] && st.seats[x].mine && (st.hands[x] || []).every(Boolean);
 
 function seatHTML(x, pos, vs) {
@@ -772,7 +936,7 @@ function seatHTML(x, pos, vs) {
   if (!seat) {
     const canBot = st.seats.filter(s => s && s.bot).length < 3 && ['waiting', 'handEnd', 'gameEnd'].includes(st.phase);
     return `<div class="${cls}"><div class="nm"><span class="dot" style="background:${TEAMVAR[team(x)]}"></span><span class="t">Seat ${x + 1} · ${esc(tn(st, team(x)))}</span></div>${coinsHTML(x)}
-      <div class="hand">${connected ? `<div class="seatbtns"><button class="seatbtn" type="button" data-sit="${x}">Sit here</button>${canBot ? `<button class="seatbtn bot" type="button" data-a='${JSON.stringify({ t: 'addBot', s: x })}'>Add bot</button>` : ''}</div>` : '<span class="sum">empty</span>'}</div><div class="tools"></div></div>`;
+      <div class="seatrow"><div class="avatar empty"></div><div class="hand">${connected ? `<div class="seatbtns"><button class="seatbtn" type="button" data-sit="${x}">Sit here</button>${canBot ? `<button class="seatbtn bot" type="button" data-a='${JSON.stringify({ t: 'addBot', s: x })}'>Add bot</button>` : ''}</div>` : '<span class="sum">empty</span>'}</div></div><div class="tools"></div></div>`;
   }
   const mine = seat.mine, h = st.hands[x] || [];
   const showFront = h.length > 0 && h.every(Boolean) && ((mine && x === vs) || st.reveal);
@@ -787,10 +951,11 @@ function seatHTML(x, pos, vs) {
   const tools = seat.bot ? (seated() && ['waiting', 'handEnd', 'gameEnd'].includes(st.phase) ? `<button class="x" type="button" data-free="${x}">${conf ? 'tap again to remove' : 'remove bot'}</button>` : '')
     : mine ? `<button class="x" type="button" data-stand="${x}">stand up</button>`
     : connected && !seat.online ? `<button class="x" type="button" data-free="${x}">${conf ? 'tap again to free this seat' : 'player left? free this seat'}</button>` : '';
+  const coinsInName = pos === 'top' || pos === 'bottom';
   const mano = st.phase !== 'waiting' && x === st.mano ? '<span class="hand-up" role="img" aria-label="Mano, plays first" title="Mano: plays first in every round">✋</span>' : '';
   return `<div class="${cls}">
-    <div class="nm">${mano}${faceHTML(x, mine && x === vs && canSign(x))}<span class="dot" style="background:${TEAMVAR[team(x)]}"></span><span class="t">${esc(seat.nick)}${mine ? ' (you)' : ''}${seat.online ? '' : ' · away'}</span>${seat.bot ? '<span class="botchip">BOT</span>' : ''}${meTurn ? '<span class="yourturn">Your turn</span>' : ''}</div>
-    ${coinsHTML(x)}<div class="hand" data-seat="${x}">${cards}</div>${pos === 'bottom' && mine ? `<div class="tact" id="tact">${actionsHTML()}</div>` : ''}<div class="tools">${tools}</div>
+    <div class="nm">${mano}<span class="dot" style="background:${TEAMVAR[team(x)]}"></span><span class="t">${esc(seat.nick)}${mine ? ' (you)' : ''}${seat.online ? '' : ' · away'}</span>${seat.bot ? '<span class="botchip">BOT</span>' : ''}${coinsInName ? coinsHTML(x) : ''}${meTurn ? '<span class="yourturn">Your turn</span>' : ''}</div>
+    ${coinsInName ? '' : coinsHTML(x)}<div class="seatrow">${avatarBox(x, mine && x === vs && canSign(x))}<div class="hand" data-seat="${x}">${cards}</div></div>${pos === 'bottom' && mine ? `<div class="tact" id="tact">${actionsHTML()}</div>` : ''}<div class="tools">${tools}</div>
     ${calloutsHTML(x)}${mine && x === vs && signMenu && canSign(x) ? signMenuHTML(x) : ''}</div>`;
 }
 const actingSetKey = s => s.phase + ':' + (s.phase === 'mus' ? s.musTurn : s.phase === 'lance' && s.lance ? s.lance.turn : '');
@@ -946,11 +1111,12 @@ document.addEventListener('click', e => {
   if (t.dataset.face !== undefined) { signMenu = !signMenu; renderFelt(); return; }
   if (t.dataset.sign) { signMenu = false; sock && connected && sock.send(JSON.stringify({ type: 'sign', seat: viewSeat(), sign: t.dataset.sign })); renderFelt(); return; }
   if (t.dataset.signclose !== undefined) { signMenu = false; renderFelt(); return; }
+  if (t.dataset.avset) { setLook({ [t.dataset.avset]: t.dataset.v }); return; }
   if (t.dataset.sumtoggle !== undefined) { summaryHidden = !summaryHidden; renderFelt(); return; }
   if (t.dataset.step) { envAmt = Math.max(2, Math.min(30, envAmt + +t.dataset.step)); renderActions(); return; }
   if (t.dataset.sit !== undefined) {
     if (!myNick()) { nickIn.focus(); toast('Type your name first.'); return; }
-    store.set('mus-nick', myNick()); send({ t: 'sit', s: +t.dataset.sit, nick: myNick() }); return;
+    store.set('mus-nick', myNick()); send({ t: 'sit', s: +t.dataset.sit, nick: myNick(), look: myLook }); return;
   }
   if (t.dataset.stand !== undefined) { send({ t: 'stand', s: +t.dataset.stand }); return; }
   if (t.dataset.free !== undefined) {
@@ -1018,7 +1184,7 @@ function fillPreview() {
   $('deckPreview').innerHTML = ['o1', 'c2', 'e3', 'b7', 'o10', 'c11', 'e12'].map(c => cardHTML(c)).join('') + cardHTML(null);
 }
 function fillSettings() {
-  fillSwatches();
+  fillSwatches(); fillAvatarEditor();
   document.querySelectorAll('input[name=deck]').forEach(r => r.checked = r.value === deckStyle());
   $('deckCustomRadio').disabled = !store.get('mus-deck-sheet');
   if (!$('rowOrder').children.length) {
@@ -1080,6 +1246,7 @@ $('cardsReset').onclick = () => {
 
 // load every card image once, so cards appear instantly when dealt
 for (const s of SUITS) for (const r of RANKS) { const im = new Image(); im.src = `/cards/${SUIT_NAME[s]}_${r}.jpg`; }
+renderLegend();
 connect();
 })();
 </script>

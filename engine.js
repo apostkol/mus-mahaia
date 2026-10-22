@@ -174,7 +174,7 @@ function replaceDiscards(s) {
 }
 
 /* apply one action; returns an error string or nothing */
-const FREE_ACTIONS = ['sit', 'start', 'next', 'newgame', 'reset', 'nick', 'free', 'teamName', 'cfg', 'adj', 'award', 'addBot'];
+const FREE_ACTIONS = ['look', 'sit', 'start', 'next', 'newgame', 'reset', 'nick', 'free', 'teamName', 'cfg', 'adj', 'award', 'addBot'];
 const BOT_NAMES = ['Txomin', 'Miren', 'Patxi', 'Amaia', 'Koldo', 'Nerea'];
 const isBot = seat => !!(seat && seat.bot);
 function act(s, a, uid) {
@@ -186,7 +186,7 @@ function act(s, a, uid) {
   switch (a.t) {
     case 'sit':
       if (s.seats[a.s]) return 'Someone took that seat.';
-      s.seats[a.s] = { uid, nick: a.nick }; L(s, `${a.nick} sits in seat ${a.s + 1} (${tn(s, team(a.s))}).`); return;
+      s.seats[a.s] = { uid, nick: a.nick, look: cleanLook(a.look) }; L(s, `${a.nick} sits in seat ${a.s + 1} (${tn(s, team(a.s))}).`); return;
     case 'stand': L(s, `${nm(s, a.s)} leaves seat ${a.s + 1}.`); s.seats[a.s] = null; return;
     case 'free':
       if (!s.seats[a.s]) return;
@@ -197,10 +197,11 @@ function act(s, a, uid) {
       if (s.seats.filter(isBot).length >= 3) return 'A table can have at most 3 bots.';
       const used = s.seats.filter(Boolean).map(x => x.nick);
       const name = BOT_NAMES.find(n => !used.includes(n)) || 'Bot';
-      s.seats[a.s] = { uid: 'bot:' + a.s + ':' + rint(1e9), nick: name, bot: true };
+      s.seats[a.s] = { uid: 'bot:' + a.s + ':' + rint(1e9), nick: name, bot: true, look: randomLook() };
       L(s, `${name} (bot) sits in seat ${a.s + 1} (${tn(s, team(a.s))}).`); return;
     }
     case 'nick': s.seats.forEach(x => { if (x && x.uid === uid) x.nick = a.nick; }); return;
+    case 'look': s.seats.forEach(x => { if (x && x.uid === uid && !x.bot) x.look = cleanLook(a.look); }); return;
     case 'teamName': {
       const t = a.team === 1 ? 1 : 0, name = String(a.name || '').trim().slice(0, 20);
       if (!name) return 'Team names cannot be empty.';
@@ -325,17 +326,41 @@ function act(s, a, uid) {
 }
 
 /* ---------- signs (keinuak): which ones are true for a hand ---------- */
-const SIGNS = ['kings2', 'kings3', 'aces2', 'aces3', 'pareak', 'mediak', 'dupleak', 'juego31', 'itsuarena'];
+const SIGNS = ['kings2', 'kings3', 'aces2', 'aces3', 'mediak', 'dupleak', 'juego31', 'bonita', 'thirty', 'twentynine', 'itsuarena'];
 function signsFor(h) {
   if (!h || h.length !== 4 || !h.every(Boolean)) return [];
   const k = h.filter(c => gv(c) === 12).length, a = h.filter(c => gv(c) === 1).length, p = paresOf(h), t = total(h);
   const out = [];
   if (k === 2) out.push('kings2'); if (k === 3) out.push('kings3');
   if (a === 2) out.push('aces2'); if (a === 3) out.push('aces3');
-  if (p && p.t === 1) out.push('pareak'); if (p && p.t === 2) out.push('mediak'); if (p && p.t === 3) out.push('dupleak');
+  if (p && p.t === 2) out.push('mediak'); if (p && p.t === 3) out.push('dupleak');
   if (t === 31) out.push('juego31');
-  if (!p && t < 31) out.push('itsuarena');
+  if (k === 3 && a === 1) out.push('bonita'); // la bonita: three kings and an ace, 31
+  if (t === 30) out.push('thirty'); if (t === 29) out.push('twentynine');
+  if (!p && t < 29) out.push('itsuarena');
   return out;
+}
+
+/* ---------- avatars: one shared face; players choose hair, shirt, glasses and facial hair ---------- */
+const LOOK = {
+  hair: ['short', 'side', 'long', 'curly', 'bun', 'buzz', 'bald'],
+  hairColor: ['#1f1a17', '#3b2a20', '#6b4a2f', '#c99a4f', '#a5482a', '#9c9c9c'],
+  shirt: ['tee', 'vneck', 'collar', 'hoodie'],
+  shirtColor: ['#2f62c9', '#c8372d', '#2d8352', '#e0a526', '#6d3fb0', '#2b2b30', '#e8e4da', '#e06a2c'],
+  glasses: ['none', 'round', 'square'],
+  facial: ['none', 'stubble', 'moustache', 'beard']
+};
+const HEX = /^#[0-9a-fA-F]{6}$/;
+function cleanLook(l) {
+  l = l && typeof l === 'object' ? l : {};
+  const pick = (k, ok) => (ok ? ok(l[k]) : LOOK[k].includes(l[k])) ? l[k] : LOOK[k][0];
+  return { hair: pick('hair'), hairColor: pick('hairColor', v => HEX.test(v)), shirt: pick('shirt'),
+    shirtColor: pick('shirtColor', v => HEX.test(v)), glasses: pick('glasses'), facial: pick('facial') };
+}
+function randomLook() {
+  const r = k => LOOK[k][rint(LOOK[k].length)];
+  return { hair: r('hair'), hairColor: r('hairColor'), shirt: r('shirt'), shirtColor: r('shirtColor'),
+    glasses: rint(3) ? 'none' : r('glasses'), facial: rint(2) ? 'none' : r('facial') };
 }
 
 /* ---------- hand records for statistics (taken once a hand is over) ---------- */
@@ -351,7 +376,7 @@ function takeRecord(s) {
   };
 }
 
-const E = { SIGNS, signsFor, takeRecord, isBot, LNAME, JORD, DEFAULT_TEAMS, SUITS, RANKS, team, rot, rk, gv, pv, total, paresOf, paresText, better,
+const E = { SIGNS, signsFor, LOOK, cleanLook, randomLook, takeRecord, isBot, LNAME, JORD, DEFAULT_TEAMS, SUITS, RANKS, team, rot, rk, gv, pv, total, paresOf, paresText, better,
   fresh, act, nm, tn, lname, bestSeat, gamesToWin, newDeck, shuffle, rint };
 if (typeof module !== 'undefined' && module.exports) module.exports = E; else root.MusEngine = E;
 })(typeof self !== 'undefined' ? self : this);

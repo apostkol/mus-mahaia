@@ -65,7 +65,7 @@ function viewFor(st, pid, online) {
   const { dealLog, deck, discards, ...rest } = st;
   const v = JSON.parse(JSON.stringify(rest));
   v.hands = st.hands.map((h, i) => (st.reveal || (st.seats[i] && st.seats[i].uid === pid)) ? h : h.map(() => null));
-  v.seats = st.seats.map(s => s && { nick: s.nick, mine: s.uid === pid, bot: !!s.bot, online: !!s.bot || online.has(s.uid) });
+  v.seats = st.seats.map(s => s && { nick: s.nick, mine: s.uid === pid, bot: !!s.bot, online: !!s.bot || online.has(s.uid), look: s.look || E.cleanLook() });
   return v;
 }
 function broadcast(room) {

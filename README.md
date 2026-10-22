@@ -11,7 +11,8 @@ Play Mus, the Basque card game, in the browser with friends or against bots, wit
 - Scoring: counted automatically, or by the players at the end of each hand
 - Points shown as coins: one partner holds the blue 1s, the other the red 5s
 - Bots: add up to 3 to any table (when creating it, or with **Add bot** on an empty seat)
-- Signs (keinuak): tap your own 🙂 face to make a sign about your hand; everyone sees it for a moment
+- Avatars: everyone has the same face and chooses their hair, shirt, glasses and facial hair (Settings)
+- Signs (keinuak): tap your own avatar to make a sign about your hand; the avatar makes it for half a second (two kings, three kings, two aces, three aces, three of a kind, two pairs, 31, la bonita, 30, 29, nothing)
 - Every finished hand is saved for statistics (see below)
 - Everyone can rename their team, and set their own text size, table colour or image, deck images and card back (Settings)
 
