@@ -74,4 +74,5 @@ This plays 100,000 hands in under a minute and adds them to the `data` folder. T
 - `bot.js` – how the bots play
 - `recorder.js` – saves finished hands to the data files
 - `simulate.js` – lets bots play many hands to collect data
-- `cards/` – one picture per card (`oros_1.jpg` … `bastos_12.jpg`) and the card back (`backside.jpg`). Replace any of them with your own picture under the same name.
+- `deck.js` – the playing cards: a Spanish-style deck drawn in code, with big corner numbers
+- `cards/` – photos of a real deck, kept for reference (the game doesn't use them)

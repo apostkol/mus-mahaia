@@ -16,7 +16,7 @@ const BOT_DELAY = [900, 1700];             // how long a bot "thinks", in ms
 
 /* ---------- static files + data downloads ---------- */
 const TYPES = { '.jpg': 'image/jpeg', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.csv': 'text/csv; charset=utf-8', '.jsonl': 'application/x-ndjson; charset=utf-8' };
-const FILES = { '/': 'index.html', '/index.html': 'index.html', '/engine.js': 'engine.js' };
+const FILES = { '/': 'index.html', '/index.html': 'index.html', '/engine.js': 'engine.js', '/deck.js': 'deck.js' };
 const CARD_FILE = /^\/cards\/(?:(?:oros|copas|espadas|bastos)_(?:[1-7]|1[0-2])|backside)\.jpg$/;
 const DATA_FILE = /^\/data\/((?:deal_\d+_[a-z0-9_]+|hands)\.(?:csv|jsonl))$/;
 const server = http.createServer((req, res) => {
@@ -83,18 +83,21 @@ function paceMs(o, n) {
   if (n.handId && n.handId !== o.handId && n.phase !== 'waiting') ms += 16 * 110 + 760;
   else if (n.lastDraw && o.draw !== n.lastDraw.round) ms += n.lastDraw.counts.reduce((a, b) => a + b, 0) * 110 + 760;
   if (n.handId && o.handId === n.handId) {
-    if (o.phase === 'lance' && (n.phase !== 'lance' || n.lanceIdx !== o.lanceIdx) && n.prevSaid && n.prevSaid.some(Boolean)) ms += 1300;
-    if (n.decl && n.decl.pares && !o.pares && !(n.phase === 'lance' && n.lanceIdx === 2)) ms += 2400;
-    if (n.decl && n.decl.juego && !o.juego && !n.punto && !(n.phase === 'lance' && n.lanceIdx === 3)) ms += 2400;
+    if (o.phase === 'lance' && (n.phase !== 'lance' || n.lanceIdx !== o.lanceIdx) && n.prevSaid && n.prevSaid.some(Boolean)) ms += 1800;
+    if (n.decl && n.decl.pares && !o.pares && !(n.phase === 'lance' && n.lanceIdx === 2)) ms += 3000;
+    if (n.decl && n.decl.juego && !o.juego && (n.punto || !(n.phase === 'lance' && n.lanceIdx === 3))) ms += 3000;
   }
   return ms;
 }
+const REVEAL_WAIT = 5000; // time to look at everyone's cards before the next hand
 function apply(room, a, uid) {
+  if ((a.t === 'next' || a.t === 'newgame') && room.st.revealedAt && Date.now() < room.st.revealedAt + REVEAL_WAIT) return 'Take a moment to look at the cards.';
   let err;
   const before = snap(room.st);
   try { err = E.act(room.st, a, uid); } catch (e) { console.error(e); err = 'Something went wrong with that move.'; }
   if (err) return err;
   room.paceUntil = Math.max(room.paceUntil || 0, Date.now()) + paceMs(before, room.st);
+  if (['handEnd', 'gameEnd'].includes(room.st.phase) && !['handEnd', 'gameEnd'].includes(before.phase)) room.st.revealedAt = room.paceUntil;
   room.st.rev = (room.st.rev || 0) + 1;
   Rec.save(E.takeRecord(room.st), room.code);
   broadcast(room);

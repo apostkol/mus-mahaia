@@ -102,7 +102,7 @@ function startLance(s, i) {
   if (i === 3) {
     s.decl.juego = [0, 1, 2, 3].map(x => total(s.hands[x]) >= 31);
     s.punto = !s.decl.juego.some(Boolean);
-    L(s, s.punto ? 'Juego: nobody has juego. Playing Punto.' : 'Juego: ' + rot(s.mano).map(x => `${nm(s, x)} ${s.decl.juego[x] ? 'sí' : 'no'}`).join(', ') + '.');
+    L(s, 'Juego: ' + rot(s.mano).map(x => `${nm(s, x)} ${s.decl.juego[x] ? 'sí' : 'no'}`).join(', ') + (s.punto ? '. Playing Punto.' : '.'));
     if (!s.punto && new Set(eligFor(s, 3).map(team)).size < 2) { s.results[3] = { s: 'nobet' }; return endHand(s); }
   }
   const order = eligFor(s, i);
