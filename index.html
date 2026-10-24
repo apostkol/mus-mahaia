@@ -144,6 +144,9 @@ button.face:focus-visible{outline:2px solid var(--turn);outline-offset:2px}
 .botchip{font-size:.62rem;font-weight:700;letter-spacing:.08em;padding:1px 6px;border-radius:999px;background:rgba(255,255,255,.18);color:var(--felt-ink);text-shadow:none}
 .seatbtns{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;align-items:center;height:100%}
 .hand-up{font-size:1.9em;line-height:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5));cursor:help}
+/* the ✋ sits low beside the avatar's shoulder, away from the speech bubble above the head */
+.avwrap > .hand-up{position:absolute;bottom:0;left:100%;margin-left:2px;z-index:3}
+.seat.right .avwrap > .hand-up{left:auto;right:100%;margin:0 2px 0 0}
 
 /* calls and declarations pop up beside opponents' avatars, and above/below teammates' */
 .callouts{position:absolute;display:flex;flex-direction:column;align-items:center;gap:5px;pointer-events:none;z-index:5}
@@ -791,7 +794,8 @@ function declFor(s) {
   return null;
 }
 function calloutsHTML(x) {
-  const out = [], k = declFor(st);
+  // one bubble per player: their latest action replaces the earlier "Pares sí / Juego no"
+  const out = [], k = st.said[x] ? null : declFor(st);
   if (k) {
     const key = `${st.handId}-${k}`, now = Date.now();
     if (!declSeen.has(key)) declSeen.set(key, now);
@@ -981,13 +985,13 @@ function seatHTML(x, pos, vs) {
   const coinsInName = pos === 'top' || pos === 'bottom';
   if (pos === 'bottom') {
     return `<div class="${cls}">
-    <div class="nm">${mano}<span class="dot" style="background:${TEAMVAR[team(x)]}"></span><span class="t">${esc(seat.nick)}${mine ? ' (you)' : ''}${seat.online ? '' : ' · away'}</span>${seat.bot ? '<span class="botchip">BOT</span>' : ''}${coinsHTML(x)}${meTurn ? '<span class="yourturn">Your turn</span>' : ''}${tools}</div>
-    <div class="mgrid"><div class="mleft"><div class="hand" data-seat="${x}">${cards}</div><div class="avwrap">${avatarBox(x, mine && x === vs && canSign(x))}${calloutsHTML(x)}</div></div>${mine ? `<div class="tact" id="tact">${actionsHTML()}</div>` : ''}</div>
+    <div class="nm"><span class="dot" style="background:${TEAMVAR[team(x)]}"></span><span class="t">${esc(seat.nick)}${mine ? ' (you)' : ''}${seat.online ? '' : ' · away'}</span>${seat.bot ? '<span class="botchip">BOT</span>' : ''}${coinsHTML(x)}${meTurn ? '<span class="yourturn">Your turn</span>' : ''}${tools}</div>
+    <div class="mgrid"><div class="mleft"><div class="hand" data-seat="${x}">${cards}</div><div class="avwrap">${avatarBox(x, mine && x === vs && canSign(x))}${mano}${calloutsHTML(x)}</div></div>${mine ? `<div class="tact" id="tact">${actionsHTML()}</div>` : ''}</div>
     ${mine && x === vs && signMenu && canSign(x) ? signMenuHTML(x) : ''}</div>`;
   }
   return `<div class="${cls}">
-    <div class="nm">${mano}<span class="dot" style="background:${TEAMVAR[team(x)]}"></span><span class="t">${esc(seat.nick)}${mine ? ' (you)' : ''}${seat.online ? '' : ' · away'}</span>${seat.bot ? '<span class="botchip">BOT</span>' : ''}${coinsInName ? coinsHTML(x) : ''}${meTurn ? '<span class="yourturn">Your turn</span>' : ''}</div>
-    ${coinsInName ? '' : coinsHTML(x)}<div class="stack"><div class="hand" data-seat="${x}">${cards}</div><div class="avwrap">${avatarBox(x, false)}${calloutsHTML(x)}</div></div><div class="tools">${tools}</div>
+    <div class="nm"><span class="dot" style="background:${TEAMVAR[team(x)]}"></span><span class="t">${esc(seat.nick)}${mine ? ' (you)' : ''}${seat.online ? '' : ' · away'}</span>${seat.bot ? '<span class="botchip">BOT</span>' : ''}${coinsInName ? coinsHTML(x) : ''}${meTurn ? '<span class="yourturn">Your turn</span>' : ''}</div>
+    ${coinsInName ? '' : coinsHTML(x)}<div class="stack"><div class="hand" data-seat="${x}">${cards}</div><div class="avwrap">${avatarBox(x, false)}${mano}${calloutsHTML(x)}</div></div><div class="tools">${tools}</div>
 </div>`;
 }
 const actingSetKey = s => s.phase + ':' + (s.phase === 'mus' ? s.musTurn : s.phase === 'lance' && s.lance ? s.lance.turn : '');
