@@ -89,7 +89,7 @@ function bestSeat(s, i) {
   return b;
 }
 function startLance(s, i) {
-  s.prevSaid = s.said.slice();
+  if (s.said.some(Boolean)) s.prevSaid = s.said.slice();
   s.said = [null, null, null, null];
   if (i > 3) return endHand(s);
   s.lanceIdx = i; s.phase = 'lance';
@@ -120,7 +120,7 @@ function finishGame(s, t) {
   else L(s, `${tn(s, t)} win the game. Games: ${tn(s, 0)} ${s.games[0]} – ${s.games[1]} ${tn(s, 1)}.`);
 }
 function endHand(s) {
-  s.reveal = true; s.lance = null; s.prevSaid = s.said.slice(); s.said = [null, null, null, null]; s.summary = [];
+  s.reveal = true; s.lance = null; if (s.said.some(Boolean)) s.prevSaid = s.said.slice(); s.said = [null, null, null, null]; s.summary = [];
   if (manual(s)) { s.phase = 'handEnd'; L(s, 'Hand over. Count the points and move the coins.'); return; }
   const lines = [];
   for (let i = 0; i < 4; i++) {
@@ -254,7 +254,7 @@ function act(s, a, uid) {
         if (s.musCount >= 4) { s.phase = 'discard'; s.discardSel = [null, null, null, null]; L(s, 'Mus! Everyone discards.'); }
         else s.musTurn = (a.s + 1) % 4;
       } else {
-        L(s, `${nm(s, a.s)}: no hay mus.`); startLance(s, 0); s.said[a.s] = 'No hay mus';
+        L(s, `${nm(s, a.s)}: no hay mus.`); s.said[a.s] = 'No hay mus'; startLance(s, 0);
       }
       return;
     case 'discard': {
@@ -343,6 +343,7 @@ function signsFor(h) {
 
 /* ---------- avatars: one shared face; players choose hair, shirt, glasses and facial hair ---------- */
 const LOOK = {
+  skin: ['#f6d7bd', '#f2c7a2', '#e0a97f', '#c68a5e', '#9a6440', '#6b4128'],
   hair: ['short', 'side', 'long', 'curly', 'bun', 'buzz', 'bald'],
   hairColor: ['#1f1a17', '#3b2a20', '#6b4a2f', '#c99a4f', '#a5482a', '#9c9c9c'],
   shirt: ['tee', 'vneck', 'collar', 'hoodie'],
@@ -354,12 +355,12 @@ const HEX = /^#[0-9a-fA-F]{6}$/;
 function cleanLook(l) {
   l = l && typeof l === 'object' ? l : {};
   const pick = (k, ok) => (ok ? ok(l[k]) : LOOK[k].includes(l[k])) ? l[k] : LOOK[k][0];
-  return { hair: pick('hair'), hairColor: pick('hairColor', v => HEX.test(v)), shirt: pick('shirt'),
+  return { skin: pick('skin', v => HEX.test(v)) === LOOK.skin[0] && !HEX.test(l.skin) ? LOOK.skin[1] : pick('skin', v => HEX.test(v)), hair: pick('hair'), hairColor: pick('hairColor', v => HEX.test(v)), shirt: pick('shirt'),
     shirtColor: pick('shirtColor', v => HEX.test(v)), glasses: pick('glasses'), facial: pick('facial') };
 }
 function randomLook() {
   const r = k => LOOK[k][rint(LOOK[k].length)];
-  return { hair: r('hair'), hairColor: r('hairColor'), shirt: r('shirt'), shirtColor: r('shirtColor'),
+  return { skin: r('skin'), hair: r('hair'), hairColor: r('hairColor'), shirt: r('shirt'), shirtColor: r('shirtColor'),
     glasses: rint(3) ? 'none' : r('glasses'), facial: rint(2) ? 'none' : r('facial') };
 }
 

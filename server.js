@@ -83,9 +83,9 @@ function paceMs(o, n) {
   if (n.handId && n.handId !== o.handId && n.phase !== 'waiting') ms += 16 * 110 + 760;
   else if (n.lastDraw && o.draw !== n.lastDraw.round) ms += n.lastDraw.counts.reduce((a, b) => a + b, 0) * 110 + 760;
   if (n.handId && o.handId === n.handId) {
-    if (o.phase === 'lance' && (n.phase !== 'lance' || n.lanceIdx !== o.lanceIdx) && n.prevSaid && n.prevSaid.some(Boolean)) ms += 1800;
-    if (n.decl && n.decl.pares && !o.pares && !(n.phase === 'lance' && n.lanceIdx === 2)) ms += 3000;
-    if (n.decl && n.decl.juego && !o.juego && (n.punto || !(n.phase === 'lance' && n.lanceIdx === 3))) ms += 3000;
+    if (((o.phase === 'lance' && (n.phase !== 'lance' || n.lanceIdx !== o.lanceIdx)) || (o.phase === 'mus' && n.phase === 'lance')) && n.prevSaid && n.prevSaid.some(Boolean)) ms += 2300;
+    if (n.decl && n.decl.pares && !o.pares) ms += 3000;
+    if (n.decl && n.decl.juego && !o.juego) ms += 3000;
   }
   return ms;
 }
@@ -105,18 +105,27 @@ function apply(room, a, uid) {
 }
 
 /* ---------- bots ---------- */
+// What each bot has noticed this hand: signs it caught (partners' more reliably than opponents').
+function knowFor(room, x) {
+  const k = room.know;
+  if (!k || k.handId !== room.st.handId) room.know = { handId: room.st.handId, bySeat: {} };
+  return room.know.bySeat[x] || (room.know.bySeat[x] = { signs: {} });
+}
+function seeSign(room, signer, sign) {
+  for (const b of botSeats(room.st)) if (b !== signer && Math.random() < Bot.catchChance(b, signer)) knowFor(room, b).signs[signer] = sign;
+}
 function botSeats(st) { return [0, 1, 2, 3].filter(x => E.isBot(st.seats[x])); }
 function scheduleBots(room) {
   clearTimeout(room.botTimer); room.botTimer = null;
   const st = room.st, bots = botSeats(st);
   if (!bots.length) return;
   planSigns(room, bots);
-  const todo = bots.map(x => ({ x, a: Bot.move(st, x) })).filter(m => m.a);
+  const todo = bots.map(x => ({ x, a: Bot.move(st, x, knowFor(room, x)) })).filter(m => m.a);
   if (!todo.length) return;
   const wait = Math.max(0, (room.paceUntil || 0) - Date.now()) + BOT_DELAY[0] + Math.random() * (BOT_DELAY[1] - BOT_DELAY[0]);
   room.botTimer = setTimeout(() => {
     room.botTimer = null;
-    const m = todo[0], again = Bot.move(room.st, m.x); // the table may have changed meanwhile
+    const m = todo[0], again = Bot.move(room.st, m.x, knowFor(room, m.x)); // the table may have changed meanwhile
     if (!again) return scheduleBots(room);
     const uid = room.st.seats[m.x].uid;
     let err = apply(room, again, uid);
@@ -128,11 +137,15 @@ function scheduleBots(room) {
 // Once per hand, when the betting starts, each bot may make a sign to its partner.
 function planSigns(room, bots) {
   const st = room.st;
-  if (st.phase !== 'lance' || room.signsDone === st.handId) return;
-  room.signsDone = st.handId;
+  const key = st.handId + ':' + (st.dealLog ? st.dealLog.length : 0);
+  if (!['mus', 'lance'].includes(st.phase) || room.signsDone === key) return;
+  room.signsDone = key;
   for (const x of bots) {
     const sign = Bot.maybeSign(st, x);
-    if (sign) setTimeout(() => { if (room.st.handId === st.handId && room.st.phase === 'lance') sendAll(room, { type: 'sign', seat: x, sign }); }, 600 + Math.random() * 4000);
+    if (sign) setTimeout(() => {
+      if (room.st.handId !== st.handId || !['mus', 'lance'].includes(room.st.phase) || !E.signsFor(room.st.hands[x]).includes(sign)) return;
+      sendAll(room, { type: 'sign', seat: x, sign }); seeSign(room, x, sign);
+    }, 600 + Math.random() * 3500);
   }
 }
 
@@ -182,7 +195,8 @@ wss.on('connection', ws => {
       if (!['mus', 'discard', 'lance'].includes(st.phase)) return send(ws, { type: 'error', text: 'Signs can be made while a hand is being played.' });
       if (!E.signsFor(st.hands[seat]).includes(m.sign)) return send(ws, { type: 'error', text: "That sign doesn't match your cards." });
       const now = Date.now(); if (ws.lastSign && now - ws.lastSign < 2500) return; ws.lastSign = now;
-      return sendAll(room, { type: 'sign', seat, sign: m.sign });
+      sendAll(room, { type: 'sign', seat, sign: m.sign }); seeSign(room, seat, m.sign);
+      return;
     }
     if (m.type === 'act' && m.a && typeof m.a === 'object') {
       const a = { ...m.a };

@@ -96,7 +96,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .seat.bottom .avwrap{align-self:flex-start}
 .nm .x{margin-left:6px}
 .avwrap{position:relative;flex:none;display:flex}
-.nm .coins{height:auto;font-size:.8rem;gap:3px;margin-left:4px}
+.nm .coins{height:auto;font-size:1rem;gap:3px;margin-left:4px}
 .seatrow{display:flex;align-items:flex-end;gap:8px}
 .avatar{width:var(--av);aspect-ratio:120/112;flex:none;display:block;background:none;border:none;padding:0;border-radius:10px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
 .avatar svg{width:100%;height:100%;display:block}
@@ -114,7 +114,7 @@ button.avatar:focus-visible{outline:2px solid var(--turn);outline-offset:3px}
 .seat.bottom .tact .btn{padding:8px 12px;min-height:40px}
 .seat.bottom .tact .btn.q,.seat.bottom .tact .btn.nq,.seat.bottom .tact .btn.paso{flex:1}
 .seat .nm{height:1.9em;flex-wrap:nowrap}
-.seat .coins{height:1.75em;overflow:hidden;flex-wrap:nowrap}
+.seat .coins{height:2.2em;overflow:hidden;flex-wrap:nowrap}
 .seat .hand{height:calc(var(--cw) * 1.6);align-items:center}
 .seat.small .hand{height:calc(var(--cw-s) * 1.6)}
 .seat .tools{height:1.3em;display:flex;align-items:center}
@@ -147,11 +147,14 @@ button.face:focus-visible{outline:2px solid var(--turn);outline-offset:2px}
 
 /* calls and declarations pop up beside opponents' avatars, and above/below teammates' */
 .callouts{position:absolute;display:flex;flex-direction:column;align-items:center;gap:5px;pointer-events:none;z-index:5}
-.seat.left .callouts{left:calc(100% + 10px);top:44px;align-items:flex-start}
-.seat.right .callouts{right:calc(100% + 10px);top:44px;align-items:flex-end}
-.seat.top .callouts{top:calc(100% + 8px);left:8px;flex-direction:row}
-.seat.bottom .callouts{bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);flex-direction:row}
-.said{font-family:var(--display);font-size:1.25rem;background:var(--paper);color:#2a201a;padding:3px 14px;border-radius:12px;white-space:nowrap;text-shadow:none;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.stack .avwrap > .callouts{bottom:calc(100% + var(--cw-s) * 1.25)}
+.avwrap > .callouts{bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);align-items:center}
+.callouts > :last-child{position:relative}
+.callouts > :last-child::after{content:"";position:absolute;left:50%;top:100%;translate:-50% -1px;border:9px solid transparent;border-top-color:var(--tail, var(--paper));border-bottom:0}
+.callouts > .said.big:last-child{--tail:var(--turn)}
+.callouts > .declbig.yes:last-child{--tail:#fff4d6}
+.callouts > .declbig.no:last-child{--tail:#2b2420}
+.said{font-family:var(--display);font-size:1.3rem;background:var(--paper);color:#2a201a;padding:4px 14px;border-radius:16px;white-space:nowrap;text-shadow:none;box-shadow:0 2px 6px rgba(0,0,0,.35)}
 .said.big{background:var(--turn)}
 .declbig{font-family:var(--display);font-weight:700;font-size:1.55rem;padding:3px 16px;border-radius:12px;background:var(--paper);color:#2a201a;text-shadow:none;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.4)}
 .declbig.yes{background:#fff4d6;outline:2px solid var(--turn)}
@@ -180,6 +183,8 @@ button.face:focus-visible{outline:2px solid var(--turn);outline-offset:2px}
 .deck .card:nth-child(3){transform:translate(-4px,-4px)}
 .status{font-size:.98rem;color:var(--felt-ink);line-height:1.35}
 .status b{display:block;font-family:var(--display);font-weight:600;font-size:1.35rem}
+.status b.pulse{animation:lancepulse .9s ease-out}
+@keyframes lancepulse{0%{transform:scale(1)}35%{transform:scale(1.6);color:var(--turn)}100%{transform:scale(1)}}
 .summary{list-style:none;margin:0;padding:0;font-size:.92rem;text-align:left;display:grid;gap:3px;min-width:min(100%,300px)}
 .summary li{display:flex;gap:10px;justify-content:space-between}
 .summary li b{font-variant-numeric:tabular-nums}
@@ -192,7 +197,7 @@ button.face:focus-visible{outline:2px solid var(--turn);outline-offset:2px}
 .center details .count{margin-top:6px}
 
 .coins{display:flex;gap:4px;align-items:center;justify-content:center;font-size:1rem;color:var(--felt-muted)}
-.coin{width:1.7em;height:1.7em;border-radius:50%;display:inline-grid;place-items:center;font-size:.72rem;font-weight:700;color:#fff;text-shadow:none;flex:none;
+.coin{width:2.1em;height:2.1em;border-radius:50%;display:inline-grid;place-items:center;font-size:.8rem;font-weight:700;color:#fff;text-shadow:none;flex:none;
   box-shadow:inset 0 0 0 2px rgba(255,255,255,.55), 0 1px 2px rgba(0,0,0,.5)}
 .coin.blue{background:var(--coin-blue)}.coin.red{background:var(--coin-red)}
 .seatbtn{background:rgba(0,0,0,.25);border:1px dashed var(--felt-muted);color:var(--felt-ink);border-radius:8px;padding:10px 14px}
@@ -330,7 +335,6 @@ legend{font-family:var(--display);font-weight:600;font-size:1.2rem;padding:0;mar
   .seat.top{top:6px}
   .seat.left,.seat.right{top:150px}
   .seat.left{left:4px}.seat.right{right:4px}
-  .seat.top .callouts{left:auto;right:calc(100% + 8px);top:30px;flex-direction:column;align-items:flex-end}
   .seat.left{left:6px}.seat.right{right:6px}
   .seat.small .nm .t{max-width:5.2em}
   .seat.small .botchip,.seat.small .yourturn{display:none}
@@ -350,7 +354,7 @@ legend{font-family:var(--display);font-weight:600;font-size:1.2rem;padding:0;mar
   .team{padding:6px 8px;gap:6px}.team .tn{font-size:1.05rem}.team .pts b{font-size:1.5rem}
   .center h3{font-size:1.3rem}
 }
-@media (prefers-reduced-motion:reduce){.seat.turn.me .avatar,.new,.face.signing{animation:none}.card{transition:none}}
+@media (prefers-reduced-motion:reduce){.status b.pulse{animation:none}.seat.turn.me .avatar,.new,.face.signing{animation:none}.card{transition:none}}
 </style>
 <style id="customCards"></style>
 </head>
@@ -402,6 +406,7 @@ legend{font-family:var(--display);font-weight:600;font-size:1.2rem;padding:0;mar
       <div class="avedit">
         <div class="avprev" id="avPrev"></div>
         <div class="avopts">
+          <div class="swatches small" id="avSkin" aria-label="Skin colour"></div>
           <label>Hair <select id="avHair"></select></label>
           <div class="swatches small" id="avHairColor" aria-label="Hair colour"></div>
           <label>Shirt <select id="avShirt"></select></label>
@@ -411,7 +416,7 @@ legend{font-family:var(--display);font-weight:600;font-size:1.2rem;padding:0;mar
           <div class="rowf"><button class="btn alt sm" type="button" id="avRandom">Random look</button></div>
         </div>
       </div>
-      <p class="hint">Everyone has the same face. Others see your avatar when you sit down.</p>
+      <p class="hint">Everyone has the same face shape. Others see your avatar when you sit down.</p>
     </fieldset>
     <fieldset>
       <legend>Text size</legend>
@@ -629,6 +634,7 @@ function fillAvatarEditor() {
   $('avHair').innerHTML = opt(HAIR_N, myLook.hair); $('avShirt').innerHTML = opt(SHIRT_N, myLook.shirt);
   $('avGlasses').innerHTML = opt(GLASS_N, myLook.glasses); $('avFacial').innerHTML = opt(FACIAL_N, myLook.facial);
   const sw = (key, list) => list.map(c => `<button type="button" class="swatch" data-avset="${key}" data-v="${c}" style="background:${c}" aria-label="${c}" aria-pressed="${myLook[key] === c}"></button>`).join('');
+  $('avSkin').innerHTML = '<span class="hint">Skin</span>' + sw('skin', L.skin);
   $('avHairColor').innerHTML = '<span class="hint">Hair colour</span>' + sw('hairColor', L.hairColor);
   $('avShirtColor').innerHTML = '<span class="hint">Shirt colour</span>' + sw('shirtColor', L.shirtColor) + `<input type="color" id="avShirtCustom" value="${myLook.shirtColor}" aria-label="Any shirt colour">`;
   $('avShirtCustom').oninput = e => setLook({ shirtColor: e.target.value });
@@ -704,12 +710,12 @@ function onState(ns) {
   const old = lastQueued || st;
   const q = (f, ms) => { frames.push({ st: f, ms }); };
   if (old && ns.handId && old.handId === ns.handId) {
-    const lanceEnded = old.phase === 'lance' && (ns.phase !== 'lance' || ns.lanceIdx !== old.lanceIdx);
-    if (lanceEnded && ns.prevSaid && ns.prevSaid.some(Boolean)) q(interimFrame(old, ns), 1800);
+    const lanceEnded = (old.phase === 'lance' && (ns.phase !== 'lance' || ns.lanceIdx !== old.lanceIdx)) || (old.phase === 'mus' && ns.phase === 'lance');
+    if (lanceEnded && ns.prevSaid && ns.prevSaid.some(Boolean)) q(interimFrame(old, ns), 2300);
     const paresNew = ns.decl && ns.decl.pares && !(old.decl && old.decl.pares);
-    if (paresNew && !(ns.phase === 'lance' && ns.lanceIdx === 2)) q(declFrame(old, ns, 'pares'), 3000);
+    if (paresNew) q(declFrame(old, ns, 'pares'), 3000);
     const juegoNew = ns.decl && ns.decl.juego && !(old.decl && old.decl.juego);
-    if (juegoNew && (ns.punto || !(ns.phase === 'lance' && ns.lanceIdx === 3))) q(declFrame(old, ns, 'juego'), 3000);
+    if (juegoNew) q(declFrame(old, ns, 'juego'), 3000);
   }
   q(ns, dealMs(old, ns));
   lastQueued = ns;
@@ -819,7 +825,7 @@ function coinsHTML(x) {
 /* ---------- avatars ---------- */
 // Everyone has the same face; hair, shirt, glasses and facial hair change. A sign changes the
 // expression (or the shoulders) of that same avatar for half a second.
-const SKIN = '#f2c7a2', SKIN_SH = '#dba27c', LIP = '#c4625a', INK = '#33241c', MOUTH = '#5b2520', TONGUE = '#e27a88';
+const LIP = '#c4625a', INK = '#33241c', MOUTH = '#5b2520', TONGUE = '#e27a88';
 const EXPR = {
   kings2: { mouth: 'biteC' }, kings3: { mouth: 'biteS' },
   aces2: { mouth: 'tongueC' }, aces3: { mouth: 'tongueS' },
@@ -834,6 +840,7 @@ function shade(hex, f) { // darker (f<1) or lighter (f>1) version of a colour
 }
 function avatarSVG(look, sign) {
   const L = look || {}, e = EXPR[sign] || {};
+  const SKIN = /^#[0-9a-f]{6}$/i.test(L.skin || '') ? L.skin : '#f2c7a2', SKIN_SH = shade(SKIN, 0.86);
   const hc = L.hairColor || '#3b2a20', sc = L.shirtColor || '#2f62c9', sd = shade(sc, 0.72);
   const [liftL, liftR] = e.lift || [0, 0];
   const yl = 88 - liftL, yr = 88 - liftR, nl = yl - 7, nr = yr - 7, nm = Math.min(nl, nr);
@@ -975,8 +982,8 @@ function seatHTML(x, pos, vs) {
   if (pos === 'bottom') {
     return `<div class="${cls}">
     <div class="nm">${mano}<span class="dot" style="background:${TEAMVAR[team(x)]}"></span><span class="t">${esc(seat.nick)}${mine ? ' (you)' : ''}${seat.online ? '' : ' · away'}</span>${seat.bot ? '<span class="botchip">BOT</span>' : ''}${coinsHTML(x)}${meTurn ? '<span class="yourturn">Your turn</span>' : ''}${tools}</div>
-    <div class="mgrid"><div class="mleft"><div class="hand" data-seat="${x}">${cards}</div><div class="avwrap">${avatarBox(x, mine && x === vs && canSign(x))}</div></div>${mine ? `<div class="tact" id="tact">${actionsHTML()}</div>` : ''}</div>
-    ${calloutsHTML(x)}${mine && x === vs && signMenu && canSign(x) ? signMenuHTML(x) : ''}</div>`;
+    <div class="mgrid"><div class="mleft"><div class="hand" data-seat="${x}">${cards}</div><div class="avwrap">${avatarBox(x, mine && x === vs && canSign(x))}${calloutsHTML(x)}</div></div>${mine ? `<div class="tact" id="tact">${actionsHTML()}</div>` : ''}</div>
+    ${mine && x === vs && signMenu && canSign(x) ? signMenuHTML(x) : ''}</div>`;
   }
   return `<div class="${cls}">
     <div class="nm">${mano}<span class="dot" style="background:${TEAMVAR[team(x)]}"></span><span class="t">${esc(seat.nick)}${mine ? ' (you)' : ''}${seat.online ? '' : ' · away'}</span>${seat.bot ? '<span class="botchip">BOT</span>' : ''}${coinsInName ? coinsHTML(x) : ''}${meTurn ? '<span class="yourturn">Your turn</span>' : ''}</div>
@@ -997,7 +1004,8 @@ function centerHTML() {
   if (ph === 'lance' && st.lance) {
     const L = st.lance, b = L.bet, i = st.lanceIdx;
     const who = L.turn >= 0 ? (b ? `${esc(nm(st, L.turn))} answers` : `${esc(nm(st, L.turn))} to speak`) : '&nbsp;';
-    return `${deck}<div class="status"><b>${lname(st, i)}</b>${who}</div>`;
+    const pulse = frameFresh && prevShown && (prevShown.phase !== 'lance' || prevShown.lanceIdx !== i || prevShown.handId !== st.handId) ? ' pulse' : '';
+    return `${deck}<div class="status"><b class="${pulse}">${lname(st, i)}</b>${who}</div>`;
   }
   if (['handEnd', 'gameEnd'].includes(ph) && summaryHidden) return '<button type="button" class="pill" data-sumtoggle>Show points</button>';
   const hide = '<button type="button" class="pill phone-only" data-sumtoggle>Hide</button>';
